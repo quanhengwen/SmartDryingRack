@@ -1,0 +1,3 @@
+".\bin\main.obj" 
+TO ".\bin\SmartDryingRack" 
+PRINT(".\LinkFile\SmartDryingRack.m51") RAMSIZE(256) 
