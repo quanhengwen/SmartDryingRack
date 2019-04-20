@@ -3,6 +3,7 @@
 #include <reg52.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 /*******************************************************************************
 *说明:自定义一些宏定义
 *******************************************************************************/
@@ -11,20 +12,21 @@
 #define GSM_Module 2 //gsm模块开启
 #define LCD_Module 3 //adc模块开启
 #define MOTOR_Module 4 //电机模块开启
-
-#define CURRENT_Module ALL_Module //默认测试
-
+#define CURRENT_Module MOTOR_Module //默认测试
 #define forever	while(1)
-
 #define nullptr	((void*)0) //空指针
-
 #define _public_	//公有
 #define _private_ //私有
-
 #define CHECK_PTR(ptr)	assert(ptr) 
-
 #define true	(!0)
 #define false	(!true)
+	
+#define MOTOR1SPEED	7 //电机1的速度控制,值越小速度越快(因为便宜，所以这个电机很垃圾)
+#define MOTOR2SPEED	1 //电机2的速度控制,值越小速度越快
+//电机1转的圈数
+#define MOTOR1CIRCLENUMBER 14500 //电机1有问题，需要不断地微调
+//电机2转的圈数
+#define MOTOR2CIRCLENUMBER 1450
 /*******************************************************************************
 *说明:自定义的一些数据类型
 *******************************************************************************/

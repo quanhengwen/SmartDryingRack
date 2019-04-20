@@ -7,15 +7,17 @@
 *******************************************************************************/
 typedef struct _GlobalManager{
 	/**
- * @brief 控制电机1的转动状态，状态值,参考MotorStatus枚举
-	* @return true:成功,false:失败
+ * @brief 控制电机1的转动状态，状态值,
+ * @param status:参考MotorStatus枚举
+ * @return true:成功,false:失败
  */
-	const bool (*controlMotor1Status)(const MotorStatus);
+	const bool (*controlMotor1StatusFunc)(const MotorStatus status);
 	/**
  * @brief 控制电机2的转动状态，状态值,参考MotorStatus枚举
-	* @return true:成功,false:失败
+ * @param status:参考MotorStatus枚举
+ * @return true:成功,false:失败
  */
-	const bool (*controlMotor2Status)(const MotorStatus);
+	const bool (*controlMotor2StatusFunc)(const MotorStatus status);
 }GlobalManager;
 /*******************************************************************************
 *说明:以下是公有调用部分函数
@@ -24,15 +26,11 @@ typedef struct _GlobalManager{
  * @brief 获取全局管理对象
  * @return 全局管理对象
  */
-_public_ extern const GlobalManager *g_getGlobalManagerObj();
+_public_ extern const GlobalManager g_getGlobalManagerObj();
 /**
  * @brief 上电的时候初始化整个单片机所有的参数函数
  */
 _public_ extern	void	g_initSystemParameter(); 
-/**
- * @brief 删除全局对象
- */
-_public_ extern void  g_deleteGlobalManagerObj();
 /**
 * @brief :延时函数
 * @param ms:毫秒
@@ -47,7 +45,6 @@ _private_	static const bool controlMotor2Status(const MotorStatus status);
 /*******************************************************************************
 *说明:以下是内部使用的函数
 *******************************************************************************/
-_private_	static const GlobalManager *newGlobalManagerObj();//创建对象 
 _private_	static void  interrupt1Init(); 
 /*******************************************************************************
 *说明:以下是私有变量
