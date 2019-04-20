@@ -1,8 +1,0 @@
-".\bin\main.obj",
-".\bin\globalManager.obj",
-".\bin\adcManager.obj",
-".\bin\gsmManager.obj",
-".\bin\lcdManager.obj",
-".\bin\MotorManager.obj" 
-TO ".\bin\SmartDryingRack" 
-PRINT(".\LinkFile\SmartDryingRack.m51") RAMSIZE(256) 

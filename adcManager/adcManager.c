@@ -1,0 +1,1 @@
+#include "adcManager.h"
