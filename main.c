@@ -1,8 +1,7 @@
-#include <reg52.h>
-#include "./common/common.h"
-int main()
+#include "./globalManager/globalManager.h"
+int8_t main()
 {
 
-
-	return 0;
+	GlobalManager *testObj=g_getGlobalManagerObj();
+	return Success_Result;
 }
