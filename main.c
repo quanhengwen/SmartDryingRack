@@ -17,10 +17,12 @@ void main()
 #endif
 //GSM模块调试
 #if CURRENT_Module==GSM_Module
-
+	g_getGlobalManagerObj().handleSendSmsInfoFunc();
+	forever{}
 #endif
 //ADC模块调试
 #if CURRENT_Module==ADC_Module
-		g_getGlobalManagerObj().handleSensorDataFunc();
+	g_getGlobalManagerObj().handleSensorDataFunc();
+	forever{}
 #endif
 }

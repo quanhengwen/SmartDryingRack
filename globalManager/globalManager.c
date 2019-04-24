@@ -8,11 +8,13 @@ void g_initSystemParameter()
 {
 		//定时器中断初始化
 		interrupt1Init();
-	
+		//初始化串口
+		uartInit();
 		//函数的初始化
 		this.controlMotor1StatusFunc=controlMotor1Status;
 		this.controlMotor2StatusFunc=controlMotor2Status;
 		this.handleSensorDataFunc=handleSensorData;	
+		this.handleSendSmsInfoFunc=handleSendSmsInfo;	
 }
 const GlobalManager g_getGlobalManagerObj()
 {
@@ -61,6 +63,12 @@ const bool handleSensorData(void)
 	
 			return false;
 }
+static const bool handleSendSmsInfo(void)
+{
+	//todo发送gsm的信息
+	sendThresholdToPhone("test");
+	return true;
+}
 void g_delay(const uint32_t one_10us)
 {
 	if(!one_10us)
@@ -81,6 +89,28 @@ static void  interrupt1Init()
 	TH0=(65536-10)/256;
 	TL0=(65536-10)%256;
 	TR0=OPEN;
+}
+static void  uartInit()
+{
+	//设置9600的波特率
+#ifdef RATE12
+    RCAP2L=0xD9;
+    RCAP2H=0xFF;
+    T2CON=0x34;
+    SCON=0x50;
+    ES=OPEN;
+    EA=OPEN;
+#else
+		PCON &= 0x7F;
+		SCON = 0x50;
+		TMOD &= 0x0F;	
+		TMOD |= 0x20;
+		TL1 = 0xFD;
+		TH1 = 0xFD;
+		ET1 = 0;
+		TR1 = OPEN;	
+		ES  = OPEN;
+#endif
 }
 /*******************************************************************************
 * 函 数 名         : timeout
