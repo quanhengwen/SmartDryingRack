@@ -11,6 +11,10 @@
 #define RATE12   //使用晶振为12HZ
 //#define RATE110592   //使用晶振为110592HZ
 
+#define Channel0		0 //光敏传感器
+#define Channel1		1 //雨滴传感器
+#define Channel2		2 //风速传感器
+		
 #define ALL_Module 0 //所有模块开启
 #define ADC_Module 1 //adc模块开启
 #define GSM_Module 2 //gsm模块开启

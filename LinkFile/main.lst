@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   MAIN                                                              04/24/2019 17:00:43 PAGE 1   
+C51 COMPILER V9.59.0.0   MAIN                                                              04/24/2019 19:29:03 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MAIN
@@ -15,27 +15,31 @@ line level    source
    5   1        g_initSystemParameter();
    6   1      //整个工程模块
    7   1      #if CURRENT_Module==ALL_Module
-                
+                    forever{
+                        g_getGlobalManagerObj().handleSensorDataFunc();
+                      
+                    
+                    }
               #endif
-  10   1      //电机模块
-  11   1      #if CURRENT_Module==MOTOR_Module
+  14   1      //电机模块
+  15   1      #if CURRENT_Module==MOTOR_Module
                   //电机1测试代码，正反转
                   g_getGlobalManagerObj().controlMotor1StatusFunc(Move_Down);
                     //电机2测试代码，正反转
                   //g_getGlobalManagerObj().controlMotor2StatusFunc(Move_Up);
                   forever{}
               #endif
-  18   1      //GSM模块调试
-  19   1      #if CURRENT_Module==GSM_Module
+  22   1      //GSM模块调试
+  23   1      #if CURRENT_Module==GSM_Module
                 g_getGlobalManagerObj().handleSendSmsInfoFunc();
                 forever{}
               #endif
-  23   1      //ADC模块调试
-  24   1      #if CURRENT_Module==ADC_Module
-  25   1        g_getGlobalManagerObj().handleSensorDataFunc();
-  26   1        forever{}
-  27   1      #endif
-  28   1      }
+  27   1      //ADC模块调试
+  28   1      #if CURRENT_Module==ADC_Module
+  29   1        g_getGlobalManagerObj().handleSensorDataFunc();
+  30   1        forever{}
+  31   1      #endif
+  32   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

@@ -5,7 +5,11 @@ void main()
 	g_initSystemParameter();
 //整个工程模块
 #if CURRENT_Module==ALL_Module
-	
+			forever{
+					g_getGlobalManagerObj().handleSensorDataFunc();
+				
+			
+			}
 #endif
 //电机模块
 #if CURRENT_Module==MOTOR_Module

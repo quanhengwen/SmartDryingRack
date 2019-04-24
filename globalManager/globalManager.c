@@ -57,7 +57,7 @@ static const bool controlMotor2Status(const MotorStatus status)
 const bool handleSensorData(void)
 {
 		uint8_t *adcValuePtr=nullptr;
-		adcValuePtr=getAdcValue(0);//获取adc通道1的真实转换值，也就是in0对应的传感器的值
+		adcValuePtr=getAdcValue(Channel0);//获取adc通道1的真实转换值，也就是in0对应的传感器的值
 		//todo 处理传感器的值与阈值判断 
 	
 	
@@ -125,4 +125,5 @@ void timeout(void) interrupt 1
 	TL0=(65536-10)%256;
 
 	g_CurrentCount++;
+	ADC_CLOCK=~ADC_CLOCK;//给adc模块发送方波
 }
