@@ -1,8 +1,6 @@
 #include "globalManager.h"
 //全局管理全局对象
 static  GlobalManager this;
-static 	bool isMotor1True=false;
-static 	uint32_t Motor1Count=0;
 /**
  * @brief 上电的时候初始化整个单片机所有的参数函数
  */
@@ -22,19 +20,13 @@ const GlobalManager g_getGlobalManagerObj()
 }
 static const bool controlMotor1Status(const MotorStatus status)
 {
-		Motor1Count=0;
-		isMotor1True=true;
 		switch(status){
 			case Move_Up:               //正转
-					 while(isMotor1True){
-							Motor1MakeATurn(MOTOR1SPEED,1);
-						}
+				Motor1ControlTurn(true,MOTOR1CIRCLENUMBER);
 					 		//todo把记录写入EEPROM
 				return true;
 			case Move_Down:							 //反转
-					 while(isMotor1True){
-							Motor1MakeATurn(8,0);
-						}
+				Motor1ControlTurn(false,MOTOR1CIRCLENUMBER);
 					 		//todo把记录写入EEPROM
 				return true;
 			case Move_Stop:							//停止
@@ -89,12 +81,4 @@ void timeout(void) interrupt 1
 	TL0=(65536-1000)%256;
 
 	g_CurrentCount++;
-	if(isMotor1True){
-		if(Motor1Count>=MOTOR1CIRCLENUMBER){
-			isMotor1True=false;
-			Motor1Count=0;
-			return ;
-		}
-		Motor1Count++;
-	}
 }

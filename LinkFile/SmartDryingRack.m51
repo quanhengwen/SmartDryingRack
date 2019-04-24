@@ -1,0 +1,429 @@
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    04/24/2019  11:42:37  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
+G:\KEIL_V5\C51\BIN\BL51.EXE .\bin\main.obj, .\bin\globalManager.obj, .\bin\adcManager.obj, .\bin\gsmManager.obj, .\bin\M
+>> otorManager.obj TO .\bin\SmartDryingRack PRINT (.\LinkFile\SmartDryingRack.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\bin\main.obj (MAIN)
+  .\bin\globalManager.obj (GLOBALMANAGER)
+  .\bin\adcManager.obj (ADCMANAGER)
+  .\bin\gsmManager.obj (GSMMANAGER)
+  .\bin\MotorManager.obj (MOTORMANAGER)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C?PLDPTR)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C?ICALL)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C?PLDIDATA)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C?PLDXDATA)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C?PLDPDATA)
+  G:\KEIL_V5\C51\LIB\C51S.LIB (?C?PLDCODE)
+
+
+LINK MAP OF MODULE:  .\bin\SmartDryingRack (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000AH     UNIT         ?DT?GLOBALMANAGER
+            DATA    0012H     000AH     UNIT         _DATA_GROUP_
+            DATA    001CH     0004H     UNIT         ?DT?MAIN
+            DATA    0020H     0004H     UNIT         ?DT?MOTORMANAGER
+            IDATA   0024H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+                    000EH     07F2H                  *** GAP ***
+            CODE    0800H     008CH     UNIT         ?C_C51STARTUP
+            CODE    088CH     004DH     UNIT         ?PR?_MOTOR2MAKEATURN?MOTORMANAGER
+            CODE    08D9H     004DH     UNIT         ?PR?_MOTOR1MAKEATURN?MOTORMANAGER
+            CODE    0926H     004DH     UNIT         ?C?LIB_CODE
+            CODE    0973H     0032H     UNIT         ?PR?_MOTOR1CONTROLTURN?MOTORMANAGER
+            CODE    09A5H     0032H     UNIT         ?PR?_MOTOR2CONTROLTURN?MOTORMANAGER
+            CODE    09D7H     0029H     UNIT         ?PR?_CONTROLMOTOR1STATUS?GLOBALMANAGER
+            CODE    0A00H     0029H     UNIT         ?PR?_CONTROLMOTOR2STATUS?GLOBALMANAGER
+            CODE    0A29H     001FH     UNIT         ?PR?_G_DELAY?GLOBALMANAGER
+            CODE    0A48H     0019H     UNIT         ?C_INITSEG
+            CODE    0A61H     0016H     UNIT         ?PR?G_INITSYSTEMPARAMETER?GLOBALMANAGER
+            CODE    0A77H     0014H     UNIT         ?PR?MAIN?MAIN
+            CODE    0A8BH     0013H     UNIT         ?PR?TIMEOUT?GLOBALMANAGER
+            CODE    0A9EH     0010H     UNIT         ?PR?INTERRUPT1INIT?GLOBALMANAGER
+            CODE    0AAEH     0010H     UNIT         ?CO?MOTORMANAGER
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  04/24/2019  11:42:37  PAGE 2
+
+
+            CODE    0ABEH     0007H     UNIT         ?PR?G_GETGLOBALMANAGEROBJ?GLOBALMANAGER
+            CODE    0AC5H     0004H     UNIT         ?PR?MOTOR1CONTROLSTOP?MOTORMANAGER
+            CODE    0AC9H     0004H     UNIT         ?PR?MOTOR2CONTROLSTOP?MOTORMANAGER
+
+
+
+OVERLAY MAP OF MODULE:   .\bin\SmartDryingRack (MAIN)
+
+
+SEGMENT                                           DATA_GROUP 
+  +--> CALLED SEGMENT                           START    LENGTH
+---------------------------------------------------------------
+?C_C51STARTUP                                   -----    -----
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN                                   -----    -----
+  +--> ?PR?G_INITSYSTEMPARAMETER?GLOBALMANAGER
+  +--> ?PR?G_GETGLOBALMANAGEROBJ?GLOBALMANAGER
+
+?PR?G_INITSYSTEMPARAMETER?GLOBALMANAGER         -----    -----
+  +--> ?PR?INTERRUPT1INIT?GLOBALMANAGER
+  +--> ?PR?_CONTROLMOTOR1STATUS?GLOBALMANAGER
+  +--> ?PR?_CONTROLMOTOR2STATUS?GLOBALMANAGER
+
+?PR?_CONTROLMOTOR1STATUS?GLOBALMANAGER          -----    -----
+  +--> ?PR?_MOTOR1CONTROLTURN?MOTORMANAGER
+  +--> ?PR?MOTOR1CONTROLSTOP?MOTORMANAGER
+
+?PR?_MOTOR1CONTROLTURN?MOTORMANAGER             0012H    0007H
+  +--> ?PR?_MOTOR1MAKEATURN?MOTORMANAGER
+  +--> ?PR?MOTOR1CONTROLSTOP?MOTORMANAGER
+
+?PR?_MOTOR1MAKEATURN?MOTORMANAGER               0019H    0003H
+  +--> ?CO?MOTORMANAGER
+  +--> ?PR?_G_DELAY?GLOBALMANAGER
+
+?PR?_CONTROLMOTOR2STATUS?GLOBALMANAGER          -----    -----
+  +--> ?PR?_MOTOR2CONTROLTURN?MOTORMANAGER
+  +--> ?PR?MOTOR2CONTROLSTOP?MOTORMANAGER
+
+?PR?_MOTOR2CONTROLTURN?MOTORMANAGER             0012H    0007H
+  +--> ?PR?_MOTOR2MAKEATURN?MOTORMANAGER
+  +--> ?PR?MOTOR2CONTROLSTOP?MOTORMANAGER
+
+?PR?_MOTOR2MAKEATURN?MOTORMANAGER               0019H    0003H
+  +--> ?CO?MOTORMANAGER
+  +--> ?PR?_G_DELAY?GLOBALMANAGER
+
+
+
+SYMBOL TABLE OF MODULE:  .\bin\SmartDryingRack (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  04/24/2019  11:42:37  PAGE 3
+
+
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:0A77H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:001CH         SYMBOL        g_CurrentCount
+  D:00C8H         PUBLIC        T2CON
+  D:001EH         SYMBOL        g_EndCount
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:0A77H         LINE#         2
+  C:0A77H         LINE#         3
+  C:0A77H         LINE#         5
+  C:0A7AH         LINE#         13
+  C:0A89H         LINE#         16
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        GLOBALMANAGER
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  C:0A8BH         PUBLIC        timeout
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:0A61H         PUBLIC        g_initSystemParameter
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:0008H         SYMBOL        this
+  D:000EH         SYMBOL        g_CurrentCount
+  C:0A9EH         SYMBOL        interrupt1Init
+  C:0ABEH         PUBLIC        g_getGlobalManagerObj
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  C:09D7H         SYMBOL        _controlMotor1Status
+  C:0A00H         SYMBOL        _controlMotor2Status
+  B:0088H.4       PUBLIC        TR0
+  C:0A29H         PUBLIC        _g_delay
+  D:00C8H         PUBLIC        T2CON
+  D:0010H         SYMBOL        g_EndCount
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          G_INITSYSTEMPARAMETER
+  C:0A61H         LINE#         7
+  C:0A61H         LINE#         8
+  C:0A61H         LINE#         10
+  C:0A64H         LINE#         13
+  C:0A6DH         LINE#         14
+  C:0A76H         LINE#         16
+  -------         ENDPROC       G_INITSYSTEMPARAMETER
+  -------         PROC          G_GETGLOBALMANAGEROBJ
+  C:0ABEH         LINE#         17
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  04/24/2019  11:42:37  PAGE 4
+
+
+  C:0ABEH         LINE#         18
+  C:0ABEH         LINE#         19
+  C:0AC4H         LINE#         20
+  -------         ENDPROC       G_GETGLOBALMANAGEROBJ
+  -------         PROC          _CONTROLMOTOR1STATUS
+  D:0007H         SYMBOL        status
+  C:09D7H         LINE#         21
+  C:09D7H         LINE#         22
+  C:09D7H         LINE#         23
+  C:09E3H         LINE#         24
+  C:09E3H         LINE#         25
+  C:09E9H         LINE#         27
+  C:09EBH         LINE#         28
+  C:09EBH         LINE#         29
+  C:09F4H         LINE#         31
+  C:09F7H         LINE#         32
+  C:09F7H         LINE#         33
+  C:09FAH         LINE#         34
+  C:09FDH         LINE#         35
+  C:09FDH         LINE#         36
+  C:09FFH         LINE#         37
+  C:09FFH         LINE#         38
+  -------         ENDPROC       _CONTROLMOTOR1STATUS
+  -------         PROC          _CONTROLMOTOR2STATUS
+  D:0007H         SYMBOL        status
+  C:0A00H         LINE#         39
+  C:0A00H         LINE#         40
+  C:0A00H         LINE#         41
+  C:0A0CH         LINE#         42
+  C:0A0CH         LINE#         43
+  C:0A12H         LINE#         44
+  C:0A14H         LINE#         45
+  C:0A14H         LINE#         46
+  C:0A1DH         LINE#         47
+  C:0A20H         LINE#         48
+  C:0A20H         LINE#         49
+  C:0A23H         LINE#         50
+  C:0A26H         LINE#         51
+  C:0A26H         LINE#         52
+  C:0A28H         LINE#         53
+  C:0A28H         LINE#         54
+  -------         ENDPROC       _CONTROLMOTOR2STATUS
+  -------         PROC          _G_DELAY
+  D:0006H         SYMBOL        ms
+  C:0A29H         LINE#         55
+  C:0A29H         LINE#         56
+  C:0A29H         LINE#         57
+  C:0A2DH         LINE#         59
+  C:0A31H         LINE#         60
+  C:0A36H         LINE#         61
+  C:0A47H         LINE#         62
+  -------         ENDPROC       _G_DELAY
+  -------         PROC          INTERRUPT1INIT
+  C:0A9EH         LINE#         63
+  C:0A9EH         LINE#         64
+  C:0A9EH         LINE#         65
+  C:0AA0H         LINE#         66
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  04/24/2019  11:42:37  PAGE 5
+
+
+  C:0AA3H         LINE#         67
+  C:0AA5H         LINE#         68
+  C:0AA8H         LINE#         69
+  C:0AABH         LINE#         70
+  C:0AADH         LINE#         71
+  -------         ENDPROC       INTERRUPT1INIT
+  -------         PROC          TIMEOUT
+  C:0A8BH         LINE#         78
+  C:0A8DH         LINE#         80
+  C:0A90H         LINE#         81
+  C:0A93H         LINE#         83
+  C:0A9BH         LINE#         84
+  -------         ENDPROC       TIMEOUT
+  -------         ENDMOD        GLOBALMANAGER
+
+  -------         MODULE        ADCMANAGER
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  -------         ENDMOD        ADCMANAGER
+
+  -------         MODULE        GSMMANAGER
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  -------         ENDMOD        GSMMANAGER
+
+  -------         MODULE        MOTORMANAGER
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:08D9H         SYMBOL        _Motor1MakeATurn
+  D:0098H         PUBLIC        SCON
+  C:088CH         SYMBOL        _Motor2MakeATurn
+  D:0088H         PUBLIC        TCON
+  D:0020H         SYMBOL        g_CurrentCount
+  C:0AAEH         PUBLIC        motor1Table
+  C:0AB6H         PUBLIC        motor2Table
+  C:0AC5H         PUBLIC        Motor1ControlStop
+  C:0AC9H         PUBLIC        Motor2ControlStop
+  C:0973H         PUBLIC        _Motor1ControlTurn
+  C:09A5H         PUBLIC        _Motor2ControlTurn
+  D:00C8H         PUBLIC        T2CON
+  D:0022H         SYMBOL        g_EndCount
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          _MOTOR1CONTROLTURN
+  D:0012H         SYMBOL        direction
+  D:0013H         SYMBOL        circleNumber
+  -------         DO            
+  D:0015H         SYMBOL        number
+  D:0017H         SYMBOL        index
+  -------         ENDDO         
+  C:0973H         LINE#         10
+  C:0979H         LINE#         11
+  C:0979H         LINE#         12
+  C:097FH         LINE#         13
+  C:0984H         LINE#         14
+  C:0984H         LINE#         15
+  C:098FH         LINE#         16
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  04/24/2019  11:42:37  PAGE 6
+
+
+  C:098FH         LINE#         17
+  C:0997H         LINE#         18
+  C:09A0H         LINE#         19
+  C:09A2H         LINE#         20
+  -------         ENDPROC       _MOTOR1CONTROLTURN
+  -------         PROC          _MOTOR2CONTROLTURN
+  D:0012H         SYMBOL        direction
+  D:0013H         SYMBOL        circleNumber
+  -------         DO            
+  D:0015H         SYMBOL        number
+  D:0017H         SYMBOL        index
+  -------         ENDDO         
+  C:09A5H         LINE#         23
+  C:09ABH         LINE#         24
+  C:09ABH         LINE#         25
+  C:09B1H         LINE#         26
+  C:09B6H         LINE#         27
+  C:09B6H         LINE#         28
+  C:09C1H         LINE#         29
+  C:09C1H         LINE#         30
+  C:09C9H         LINE#         31
+  C:09D2H         LINE#         32
+  C:09D4H         LINE#         33
+  -------         ENDPROC       _MOTOR2CONTROLTURN
+  -------         PROC          MOTOR1CONTROLSTOP
+  C:0AC5H         LINE#         36
+  C:0AC5H         LINE#         37
+  C:0AC5H         LINE#         38
+  C:0AC8H         LINE#         39
+  -------         ENDPROC       MOTOR1CONTROLSTOP
+  -------         PROC          MOTOR2CONTROLSTOP
+  C:0AC9H         LINE#         40
+  C:0AC9H         LINE#         41
+  C:0AC9H         LINE#         42
+  C:0ACCH         LINE#         43
+  -------         ENDPROC       MOTOR2CONTROLSTOP
+  -------         PROC          _MOTOR2MAKEATURN
+  D:0007H         SYMBOL        direction
+  D:0019H         SYMBOL        speed
+  -------         DO            
+  D:001BH         SYMBOL        index
+  -------         ENDDO         
+  C:088CH         LINE#         44
+  C:0890H         LINE#         45
+  C:0890H         LINE#         46
+  C:0893H         LINE#         47
+  C:0896H         LINE#         48
+  C:0896H         LINE#         49
+  C:08A4H         LINE#         50
+  C:08A4H         LINE#         51
+  C:08ACH         LINE#         52
+  C:08B3H         LINE#         53
+  C:08B7H         LINE#         54
+  C:08B7H         LINE#         55
+  C:08C5H         LINE#         56
+  C:08C5H         LINE#         57
+  C:08CDH         LINE#         58
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  04/24/2019  11:42:37  PAGE 7
+
+
+  C:08D4H         LINE#         59
+  C:08D8H         LINE#         60
+  C:08D8H         LINE#         61
+  -------         ENDPROC       _MOTOR2MAKEATURN
+  -------         PROC          _MOTOR1MAKEATURN
+  D:0007H         SYMBOL        direction
+  D:0019H         SYMBOL        speed
+  -------         DO            
+  D:001BH         SYMBOL        index
+  -------         ENDDO         
+  C:08D9H         LINE#         62
+  C:08DDH         LINE#         63
+  C:08DDH         LINE#         64
+  C:08E0H         LINE#         65
+  C:08E3H         LINE#         66
+  C:08E3H         LINE#         67
+  C:08F1H         LINE#         68
+  C:08F1H         LINE#         69
+  C:08F9H         LINE#         70
+  C:0900H         LINE#         71
+  C:0904H         LINE#         72
+  C:0904H         LINE#         73
+  C:0912H         LINE#         74
+  C:0912H         LINE#         75
+  C:091AH         LINE#         76
+  C:0921H         LINE#         77
+  C:0925H         LINE#         78
+  C:0925H         LINE#         79
+  -------         ENDPROC       _MOTOR1MAKEATURN
+  -------         ENDMOD        MOTORMANAGER
+
+  -------         MODULE        ?C?PLDPTR
+  C:0926H         PUBLIC        ?C?PLDPTR
+  -------         ENDMOD        ?C?PLDPTR
+
+  -------         MODULE        ?C?ICALL
+  C:0946H         PUBLIC        ?C?ICALL
+  C:094AH         PUBLIC        ?C?ICALL2
+  -------         ENDMOD        ?C?ICALL
+
+  -------         MODULE        ?C?PLDIDATA
+  C:094CH         PUBLIC        ?C?PLDIDATA
+  -------         ENDMOD        ?C?PLDIDATA
+
+  -------         MODULE        ?C?PLDXDATA
+  C:0955H         PUBLIC        ?C?PLDXDATA
+  -------         ENDMOD        ?C?PLDXDATA
+
+  -------         MODULE        ?C?PLDPDATA
+  C:095EH         PUBLIC        ?C?PLDPDATA
+  -------         ENDMOD        ?C?PLDPDATA
+
+  -------         MODULE        ?C?PLDCODE
+  C:0967H         PUBLIC        ?C?PLDCODE
+  -------         ENDMOD        ?C?PLDCODE
+
+******************************************************************************
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  04/24/2019  11:42:37  PAGE 8
+
+
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 01F6H BYTE (24%) *
+******************************************************************************
+
+Program Size: data=37.0 xdata=0 code=723
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

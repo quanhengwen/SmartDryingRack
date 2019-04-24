@@ -1,0 +1,25 @@
+C51 COMPILER V9.59.0.0   GSMMANAGER                                                        04/24/2019 11:42:37 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GSMMANAGER
+OBJECT MODULE PLACED IN .\bin\gsmManager.obj
+COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE gsmManager\gsmManager.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRIN
+                    -T(.\LinkFile\gsmManager.lst) TABS(2) OBJECT(.\bin\gsmManager.obj)
+
+line level    source
+
+   1          #include "gsmManager.h"
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

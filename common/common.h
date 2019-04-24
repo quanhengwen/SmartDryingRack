@@ -21,10 +21,10 @@
 #define true	(!0)
 #define false	(!true)
 	
-#define MOTOR1SPEED	7 //电机1的速度控制,值越小速度越快(因为便宜，所以这个电机很垃圾)
+#define MOTOR1SPEED	7 //电机1的速度控制,值越小速度越快(已经重新购买成功测试成功)
 #define MOTOR2SPEED	1 //电机2的速度控制,值越小速度越快
 //电机1转的圈数
-#define MOTOR1CIRCLENUMBER 14500 //电机1有问题，需要不断地微调
+#define MOTOR1CIRCLENUMBER 1450
 //电机2转的圈数
 #define MOTOR2CIRCLENUMBER 1450
 /*******************************************************************************

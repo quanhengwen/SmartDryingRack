@@ -1,5 +1,5 @@
 #include "./globalManager/globalManager.h"
-int8_t main()
+void main()
 {
 	//全局初始化函数
 	g_initSystemParameter();
@@ -19,5 +19,4 @@ int8_t main()
 #if CURRENT_Module==GSM_Module
 
 #endif
-	return Success_Result;
 }
