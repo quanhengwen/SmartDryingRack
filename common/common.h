@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <intrins.h>
 /*******************************************************************************
 *说明:自定义一些宏定义
 *******************************************************************************/
@@ -12,7 +13,7 @@
 #define GSM_Module 2 //gsm模块开启
 #define LCD_Module 3 //adc模块开启
 #define MOTOR_Module 4 //电机模块开启
-#define CURRENT_Module MOTOR_Module //默认测试
+#define CURRENT_Module ADC_Module //默认测试
 #define forever	while(1)
 #define nullptr	((void*)0) //空指针
 #define _public_	//公有
@@ -60,6 +61,17 @@ typedef enum _MotorStatus{
 *******************************************************************************/
 typedef enum _SwitchStatus{
 	OPEN=1,               //开
-	CLOSE=2,							 //关
+	CLOSE=0,							 //关
 }SwitchStatus;
+/*******************************************************************************
+*说明:相关位的定义
+*******************************************************************************/
+sbit ADC_ST   = P3^2; //adc的START接口
+sbit ADC_OE   = P2^5; //adc的OE接口
+sbit ADC_EOC  = P2^6; //adc的EOC接口
+sbit ADC_CLOCK  = P2^7; //adc的CLOCK接口
+
+sbit ADC_adda = P3^4;//adc的地址A	
+sbit ADC_addb = P3^5;//adc的地址B
+sbit ADC_addc = P3^6;//adc的地址C
 #endif

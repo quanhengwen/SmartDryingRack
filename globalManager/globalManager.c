@@ -12,7 +12,7 @@ void g_initSystemParameter()
 		//函数的初始化
 		this.controlMotor1StatusFunc=controlMotor1Status;
 		this.controlMotor2StatusFunc=controlMotor2Status;
-	
+		this.handleSensorDataFunc=handleSensorData;	
 }
 const GlobalManager g_getGlobalManagerObj()
 {
@@ -52,21 +52,34 @@ static const bool controlMotor2Status(const MotorStatus status)
 				return false;
 		} 
 }
-void g_delay(const uint32_t ms)
+const bool handleSensorData(void)
 {
-	if(!ms)
+		uint8_t *adcValuePtr=nullptr;
+		adcValuePtr=getAdcValue(0);//获取adc通道1的真实转换值，也就是in0对应的传感器的值
+		//todo 处理传感器的值与阈值判断 
+	
+	
+			return false;
+}
+void g_delay(const uint32_t one_10us)
+{
+	if(!one_10us)
 		return;
-	g_EndCount=ms;
+	g_EndCount=one_10us;
 	g_CurrentCount=0;
-	do{}while(g_CurrentCount<g_EndCount);
+	forever{
+		if(g_CurrentCount>=g_EndCount)
+			break;
+	}
 }
 static void  interrupt1Init()
 {
 	EA = OPEN;
 	TMOD = 0x11;
 	ET0 = OPEN;
-	TH0=(65536-1000)/256;
-	TL0=(65536-1000)%256;
+	//10 us
+	TH0=(65536-10)/256;
+	TL0=(65536-10)%256;
 	TR0=OPEN;
 }
 /*******************************************************************************
@@ -77,8 +90,9 @@ static void  interrupt1Init()
 *******************************************************************************/
 void timeout(void) interrupt 1
 {
-	TH0=(65536-1000)/256;
-	TL0=(65536-1000)%256;
+	//10 us
+	TH0=(65536-10)/256;
+	TL0=(65536-10)%256;
 
 	g_CurrentCount++;
 }

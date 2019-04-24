@@ -49,13 +49,13 @@ static void Motor2MakeATurn(bool const direction,const uint32_t speed)
 		for(index=0; index<8; index++)
 		{
 			P1  =	motor2Table[index];
-			g_delay(speed);
+			g_delay(speed*100);
 		}
 	}else{
 		for(index=7; index>0; --index)
 		{
 			P1 = motor2Table[index];
-			g_delay(speed);
+			g_delay(speed*100);
 		}
 	}
 }
@@ -67,13 +67,13 @@ static void Motor1MakeATurn(bool const direction,const uint32_t speed)
 		for(index=0; index<8; index++)
 		{
 			P1  =	motor1Table[index];
-			g_delay(speed);
+			g_delay(speed*100);
 		}
 	}else{
 		for(index=7; index>0; --index)
 		{
 			P1 = motor1Table[index];
-			g_delay(speed);
+			g_delay(speed*100);
 		}
 	}
 }

@@ -19,4 +19,8 @@ void main()
 #if CURRENT_Module==GSM_Module
 
 #endif
+//ADCÄ£¿éµ÷ÊÔ
+#if CURRENT_Module==ADC_Module
+		g_getGlobalManagerObj().handleSensorDataFunc();
+#endif
 }
