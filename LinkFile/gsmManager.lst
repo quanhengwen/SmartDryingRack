@@ -1,10 +1,10 @@
-C51 COMPILER V9.59.0.0   GSMMANAGER                                                        04/24/2019 19:29:04 PAGE 1   
+C51 COMPILER V9.54   GSMMANAGER                                                            04/25/2019 01:44:55 PAGE 1   
 
 
-C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GSMMANAGER
+C51 COMPILER V9.54, COMPILATION OF MODULE GSMMANAGER
 OBJECT MODULE PLACED IN .\bin\gsmManager.obj
-COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE gsmManager\gsmManager.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRIN
-                    -T(.\LinkFile\gsmManager.lst) TABS(2) OBJECT(.\bin\gsmManager.obj)
+COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE gsmManager\gsmManager.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\gsmMana
+                    -ger.lst) TABS(2) OBJECT(.\bin\gsmManager.obj)
 
 line level    source
 
@@ -16,17 +16,17 @@ line level    source
    6          {
    7   1        bool ret;
    8   1        
-   9   1        ret = UART1_Send_AT_Command("AT","OK",3,50);//测试通信是否成功
+   9   1        ret = UART1_Send_AT_Command(content," ",1,50);//测试通信是否成功
   10   1        if(!ret)
   11   1        {
   12   2          return false;
   13   2        }
-  14   1        
-  15   1        ret = UART1_Send_AT_Command("AT+CPIN?","READY",2,50);//查询卡是否插上
-  16   1        if(!ret)
-  17   1        {
-  18   2          return false;
-  19   2        }
+  14   1      //  
+  15   1      //  ret = UART1_Send_AT_Command("AT+CPIN?","READY",2,50);//查询卡是否插上
+  16   1      //  if(!ret)
+  17   1      //  {
+  18   1      //    return false;
+  19   1      //  }
   20   1        //todo 发送信息到手机去
   21   1      //  ret = UART1_Send_AT_Command(phone,"OK",2,50);//拨号
   22   1      //  if(!ret)
@@ -35,7 +35,6 @@ line level    source
   25   1      //  }
   26   1        return true;
   27   1      }
-*** WARNING C280 IN LINE 5 OF gsmManager\gsmManager.c: 'content': unreferenced local variable
   28          static const bool UART1_Send_AT_Command(uint8_t *sendData,uint8_t *backData,uint8_t wait_time, uint16_t in
              -terval_time)       
   29          {
@@ -45,7 +44,7 @@ line level    source
   33   1        while(count < wait_time)                    
   34   1        {
   35   2          UART1_Send_Command(sendData);//把指令发出去 会自动添加\r\n后缀的
-  36   2          g_delay(interval_time);
+  36   2          g_delay(interval_time*100);
   37   2          if(Find(backData))            //查找需要应答的字符
   38   2          {
   39   3            return true;
@@ -62,9 +61,9 @@ line level    source
   50          * 返回   : 
   51          * 注意   : 
   52          *******************************************************************************/
-C51 COMPILER V9.59.0.0   GSMMANAGER                                                        04/24/2019 19:29:04 PAGE 2   
-
   53          static void CLR_Buf(void)
+C51 COMPILER V9.54   GSMMANAGER                                                            04/25/2019 01:44:55 PAGE 2   
+
   54          {
   55   1        uint8_t count;
   56   1        for(count=0;count<Buf_Max;count++)      //将缓存内容清零
@@ -76,15 +75,15 @@ line level    source
   62          /**********************************
   63          发送命令
   64          **********************************/
-  65          static void UART1_Send_Command(char *s)
+  65          static void UART1_Send_Command(uint8_t *s)
   66          {
   67   1        CLR_Buf(); 
   68   1        while(*s)//检测字符串结束符
   69   1        {
   70   2          UART1_SendData(*s++);//发送当前字符
   71   2        }
-  72   1        UART1_SendData(0x0D);
-  73   1        UART1_SendData(0x0A);
+  72   1      //  UART1_SendData(0x0D);
+  73   1      //  UART1_SendData(0x0A);
   74   1      }
   75          /*----------------------------
   76          UART1 发送串口数据
@@ -126,9 +125,9 @@ line level    source
  112          {
  113   1        if (RI)
  114   1        {
-C51 COMPILER V9.59.0.0   GSMMANAGER                                                        04/24/2019 19:29:04 PAGE 3   
-
  115   2          RI = 0;                           //清除RI位
+C51 COMPILER V9.54   GSMMANAGER                                                            04/25/2019 01:44:55 PAGE 3   
+
  116   2          Uart1_Buf[First_Int] = SBUF;      //将接收到的字符串存到缓存中
  117   2          First_Int++;                    //缓存指针向后移动
  118   2          if(First_Int >= Buf_Max)          //如果缓存满,将缓存指针指向缓存的首地址
@@ -144,14 +143,14 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    317    ----
-   CONSTANT SIZE    =     21    ----
+   CODE SIZE        =    250    ----
+   CONSTANT SIZE    =      2    ----
    XDATA SIZE       =     70    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =      5      19
+   DATA SIZE        =      5      16
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

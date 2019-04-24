@@ -23,6 +23,10 @@ const uint8_t *getAdcValue(const int8_t channel)
     handleAdcValue(channel);
 		return real_adc_value;
 }
+const uint8_t getAdcValueDisplay(void)
+{
+	return ADC_DATA;
+}
 static void handleAdcValue(const int8_t channel)
 {
 		if(channel<0 || channel>7)

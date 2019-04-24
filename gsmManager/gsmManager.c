@@ -6,17 +6,17 @@ const bool sendThresholdToPhone(const uint8_t *content)
 {
 	bool ret;
 	
-	ret = UART1_Send_AT_Command("AT","OK",3,50);//测试通信是否成功
+	ret = UART1_Send_AT_Command(content," ",1,50);//测试通信是否成功
 	if(!ret)
 	{
 		return false;
 	}
-	
-	ret = UART1_Send_AT_Command("AT+CPIN?","READY",2,50);//查询卡是否插上
-	if(!ret)
-	{
-		return false;
-	}
+//	
+//	ret = UART1_Send_AT_Command("AT+CPIN?","READY",2,50);//查询卡是否插上
+//	if(!ret)
+//	{
+//		return false;
+//	}
 	//todo 发送信息到手机去
 //	ret = UART1_Send_AT_Command(phone,"OK",2,50);//拨号
 //	if(!ret)
@@ -33,7 +33,7 @@ static const bool UART1_Send_AT_Command(uint8_t *sendData,uint8_t *backData,uint
 	while(count < wait_time)                    
 	{
 		UART1_Send_Command(sendData);//把指令发出去 会自动添加\r\n后缀的
-		g_delay(interval_time);
+		g_delay(interval_time*100);
 		if(Find(backData))            //查找需要应答的字符
 		{
 			return true;
@@ -62,15 +62,15 @@ static void CLR_Buf(void)
 /**********************************
 发送命令
 **********************************/
-static void UART1_Send_Command(char *s)
+static void UART1_Send_Command(uint8_t *s)
 {
 	CLR_Buf(); 
 	while(*s)//检测字符串结束符
 	{
 		UART1_SendData(*s++);//发送当前字符
 	}
-	UART1_SendData(0x0D);
-	UART1_SendData(0x0A);
+//	UART1_SendData(0x0D);
+//	UART1_SendData(0x0A);
 }
 /*----------------------------
 UART1 发送串口数据

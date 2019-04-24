@@ -57,16 +57,23 @@ static const bool controlMotor2Status(const MotorStatus status)
 const bool handleSensorData(void)
 {
 		uint8_t *adcValuePtr=nullptr;
-		adcValuePtr=getAdcValue(Channel0);//获取adc通道1的真实转换值，也就是in0对应的传感器的值
-		//todo 处理传感器的值与阈值判断 
+		DHT11Data dh11Data;
+		memset(&dh11Data,0,sizeof(DHT11Data));
+		adcValuePtr=getAdcValue(Channel2);//获取adc通道1的真实转换值，也就是in0对应的传感器的值
+		//todo 处理传感器的值与阈值判断
+		//光敏传感器等
+//		handleSendSmsInfo();
 	
-	
-			return false;
+		dh11Data=DHT11_receive();
+		sendThresholdToPhone(&dh11Data.RH);		
+		sendThresholdToPhone(&dh11Data.TH);		
+		return false;
 }
 static const bool handleSendSmsInfo(void)
 {
 	//todo发送gsm的信息
-	sendThresholdToPhone("test");
+	uint8_t adcData=getAdcValueDisplay();
+	sendThresholdToPhone(&adcData);
 	return true;
 }
 void g_delay(const uint32_t one_10us)

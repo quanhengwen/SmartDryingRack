@@ -25,7 +25,7 @@ _private_ static void CLR_Buf(void);
  * @brief UART1_Send_Command:发送字符串给gsm
  * @param s:内容
  */
-_private_ static void UART1_Send_Command(char *s);
+_private_ static void UART1_Send_Command(uint8_t *s);
 /**
  * @brief UART1_SendData:发送一个字符
  * @param dat:字符

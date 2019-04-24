@@ -10,17 +10,17 @@
 *******************************************************************************/
 #define RATE12   //使用晶振为12HZ
 //#define RATE110592   //使用晶振为110592HZ
-
-#define Channel0		0 //光敏传感器
-#define Channel1		1 //雨滴传感器
-#define Channel2		2 //风速传感器
+//通道0最好不要用，因为它有一个电阻，然后出问题
+#define Channel1		1 //光敏传感器
+#define Channel2		2 //雨滴传感器
+#define Channel3		3 //风速传感器
 		
 #define ALL_Module 0 //所有模块开启
 #define ADC_Module 1 //adc模块开启
 #define GSM_Module 2 //gsm模块开启
 #define LCD_Module 3 //adc模块开启
 #define MOTOR_Module 4 //电机模块开启
-#define CURRENT_Module ADC_Module //默认测试
+#define CURRENT_Module ALL_Module //默认测试
 #define forever	while(1)
 #define nullptr	((void*)0) //空指针
 #define _public_	//公有
@@ -81,4 +81,13 @@ sbit ADC_CLOCK  = P2^7; //adc的CLOCK接口
 sbit ADC_adda = P3^4;//adc的地址A	
 sbit ADC_addb = P3^5;//adc的地址B
 sbit ADC_addc = P3^6;//adc的地址C
+
+sbit Data=P2^3;   //DHT11定义数据线
+/*******************************************************************************
+*说明:DHT11数据
+*******************************************************************************/
+typedef struct _DHT11Data{
+		uint8_t RH;//湿度
+		uint8_t TH;//温度
+}DHT11Data;
 #endif

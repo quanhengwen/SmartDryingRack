@@ -7,6 +7,8 @@
  * @return adc转换之后的真实的值，以数组的形式传回来
  */
 _public_ extern const uint8_t *getAdcValue(const int8_t channel);
+//测试函数
+_public_ extern const uint8_t getAdcValueDisplay(void);
 /*******************************************************************************
 *说明：以下是私有函数
 *******************************************************************************/ 

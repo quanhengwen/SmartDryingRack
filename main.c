@@ -6,9 +6,9 @@ void main()
 //整个工程模块
 #if CURRENT_Module==ALL_Module
 			forever{
+					//两秒获取一次
+					g_delay(100*5000);
 					g_getGlobalManagerObj().handleSensorDataFunc();
-				
-			
 			}
 #endif
 //电机模块

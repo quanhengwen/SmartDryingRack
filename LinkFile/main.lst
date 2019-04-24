@@ -1,10 +1,10 @@
-C51 COMPILER V9.59.0.0   MAIN                                                              04/24/2019 19:29:03 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  04/25/2019 01:44:54 PAGE 1   
 
 
-C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MAIN
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN .\bin\main.obj
-COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\main
-                    -.lst) TABS(2) OBJECT(.\bin\main.obj)
+COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\main.lst) TABS(2) OBJECT
+                    -(.\bin\main.obj)
 
 line level    source
 
@@ -15,12 +15,12 @@ line level    source
    5   1        g_initSystemParameter();
    6   1      //整个工程模块
    7   1      #if CURRENT_Module==ALL_Module
-                    forever{
-                        g_getGlobalManagerObj().handleSensorDataFunc();
-                      
-                    
-                    }
-              #endif
+   8   1            forever{
+   9   2                //两秒获取一次
+  10   2                g_delay(100*5000);
+  11   2                g_getGlobalManagerObj().handleSensorDataFunc();
+  12   2            }
+  13   1      #endif
   14   1      //电机模块
   15   1      #if CURRENT_Module==MOTOR_Module
                   //电机1测试代码，正反转
@@ -36,14 +36,14 @@ line level    source
               #endif
   27   1      //ADC模块调试
   28   1      #if CURRENT_Module==ADC_Module
-  29   1        g_getGlobalManagerObj().handleSensorDataFunc();
-  30   1        forever{}
-  31   1      #endif
+                g_getGlobalManagerObj().handleSensorDataFunc();
+                forever{}
+              #endif
   32   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     21    ----
+   CODE SIZE        =     28    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

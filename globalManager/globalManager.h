@@ -4,6 +4,7 @@
 #include "../motorManager/motorManager.h"
 #include "../adcManager/adcManager.h"
 #include "../gsmManager/gsmManager.h"
+#include "./DH11.h"
 /*******************************************************************************
 *说明:全局管理结构体
 *******************************************************************************/
