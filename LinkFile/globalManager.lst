@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   GLOBALMANAGER                                                         04/25/2019 01:44:55 PAGE 1   
+C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 10:10:20 PAGE 1   
 
 
-C51 COMPILER V9.54, COMPILATION OF MODULE GLOBALMANAGER
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GLOBALMANAGER
 OBJECT MODULE PLACED IN .\bin\globalManager.obj
-COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE globalManager\globalManager.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\g
-                    -lobalManager.lst) TABS(2) OBJECT(.\bin\globalManager.obj)
+COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE globalManager\globalManager.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEN
+                    -D PRINT(.\LinkFile\globalManager.lst) TABS(2) OBJECT(.\bin\globalManager.obj)
 
 line level    source
 
@@ -24,138 +24,151 @@ line level    source
   14   1          this.controlMotor1StatusFunc=controlMotor1Status;
   15   1          this.controlMotor2StatusFunc=controlMotor2Status;
   16   1          this.handleSensorDataFunc=handleSensorData; 
-  17   1          this.handleSendSmsInfoFunc=handleSendSmsInfo; 
-  18   1      }
-  19          const GlobalManager g_getGlobalManagerObj()
-  20          {
-  21   1        return this;
-  22   1      }
-  23          static const bool controlMotor1Status(const MotorStatus status)
-  24          {
-  25   1          switch(status){
-  26   2            case Move_Up:               //正转
-  27   2              Motor1ControlTurn(true,MOTOR1CIRCLENUMBER);
-  28   2                    //todo把记录写入EEPROM
-  29   2              return true;
-  30   2            case Move_Down:              //反转
-  31   2              Motor1ControlTurn(false,MOTOR1CIRCLENUMBER);
-  32   2                    //todo把记录写入EEPROM
-  33   2              return true;
-  34   2            case Move_Stop:             //停止
-  35   2              Motor1ControlStop();
-  36   2              return true;
-  37   2            default:
-  38   2              return false;
-  39   2          } 
-  40   1      }
-  41          static const bool controlMotor2Status(const MotorStatus status)
-  42          {
-  43   1          switch(status){
-  44   2            case Move_Up:               //正转
-  45   2              Motor2ControlTurn(true,MOTOR2CIRCLENUMBER);
-  46   2              return true;
-  47   2            case Move_Down:              //反转
-  48   2              Motor2ControlTurn(false,MOTOR2CIRCLENUMBER);
-  49   2              return true;
-  50   2            case Move_Stop:             //停止
-  51   2              Motor2ControlStop();
-  52   2              return true;
-  53   2            default:
-  54   2              return false;
-C51 COMPILER V9.54   GLOBALMANAGER                                                         04/25/2019 01:44:55 PAGE 2   
+  17   1          this.handleSendSmsInfoFunc=handleSendSmsInfo;
+  18   1          this.handleControlMagnetFunc=handleControlMagnet;
+  19   1      }
+  20          const GlobalManager g_getGlobalManagerObj()
+  21          {
+  22   1        return this;
+  23   1      }
+  24          static const bool controlMotor1Status(const MotorStatus status)
+  25          {
+  26   1          switch(status){
+  27   2            case Move_Up:               //正转
+  28   2              Motor1ControlTurn(true,MOTOR1CIRCLENUMBER);
+  29   2                    //todo把记录写入EEPROM
+  30   2              return true;
+  31   2            case Move_Down:              //反转
+  32   2              Motor1ControlTurn(false,MOTOR1CIRCLENUMBER);
+  33   2                    //todo把记录写入EEPROM
+  34   2              return true;
+  35   2            case Move_Stop:             //停止
+  36   2              Motor1ControlStop();
+  37   2              return true;
+  38   2            default:
+  39   2              return false;
+  40   2          } 
+  41   1      }
+  42          static const bool controlMotor2Status(const MotorStatus status)
+  43          {
+  44   1          switch(status){
+  45   2            case Move_Up:               //正转
+  46   2              Motor2ControlTurn(true,MOTOR2CIRCLENUMBER);
+  47   2              return true;
+  48   2            case Move_Down:              //反转
+  49   2              Motor2ControlTurn(false,MOTOR2CIRCLENUMBER);
+  50   2              return true;
+  51   2            case Move_Stop:             //停止
+  52   2              Motor2ControlStop();
+  53   2              return true;
+  54   2            default:
+C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 10:10:20 PAGE 2   
 
-  55   2          } 
-  56   1      }
-  57          const bool handleSensorData(void)
-  58          {
-  59   1          uint8_t *adcValuePtr=nullptr;
-  60   1          DHT11Data dh11Data;
-  61   1          memset(&dh11Data,0,sizeof(DHT11Data));
-  62   1          adcValuePtr=getAdcValue(Channel2);//获取adc通道1的真实转换值，也就是in0对应的传感器的值
-  63   1          //todo 处理传感器的值与阈值判断
-  64   1          //光敏传感器等
-  65   1      //    handleSendSmsInfo();
-  66   1        
-  67   1          dh11Data=DHT11_receive();
-  68   1          sendThresholdToPhone(&dh11Data.RH);   
-  69   1          sendThresholdToPhone(&dh11Data.TH);   
-  70   1          return false;
-  71   1      }
-  72          static const bool handleSendSmsInfo(void)
-  73          {
-  74   1        //todo发送gsm的信息
-  75   1        uint8_t adcData=getAdcValueDisplay();
-  76   1        sendThresholdToPhone(&adcData);
-  77   1        return true;
-  78   1      }
-  79          void g_delay(const uint32_t one_10us)
-  80          {
-  81   1        if(!one_10us)
-  82   1          return;
-  83   1        g_EndCount=one_10us;
-  84   1        g_CurrentCount=0;
-  85   1        forever{
-  86   2          if(g_CurrentCount>=g_EndCount)
-  87   2            break;
-  88   2        }
-  89   1      }
-  90          static void  interrupt1Init()
-  91          {
-  92   1        EA = OPEN;
-  93   1        TMOD = 0x11;
-  94   1        ET0 = OPEN;
-  95   1        //10 us
-  96   1        TH0=(65536-10)/256;
-  97   1        TL0=(65536-10)%256;
-  98   1        TR0=OPEN;
-  99   1      }
- 100          static void  uartInit()
- 101          {
- 102   1        //设置9600的波特率
- 103   1      #ifdef RATE12
- 104   1          RCAP2L=0xD9;
- 105   1          RCAP2H=0xFF;
- 106   1          T2CON=0x34;
- 107   1          SCON=0x50;
- 108   1          ES=OPEN;
- 109   1          EA=OPEN;
- 110   1      #else
+  55   2              return false;
+  56   2          } 
+  57   1      }
+  58          const bool handleSensorData(void)
+  59          {
+  60   1          uint8_t adcValue=0;
+  61   1          DHT11Data dh11Data;
+  62   1          memset(&dh11Data,0,sizeof(DHT11Data));
+  63   1          adcValue=getAdcValue(Channel1);//获取光敏传感器的数值(未转换公式)
+  64   1          adcValue=getAdcValue(Channel2);//获取雨滴传感器的数值(未转换公式)
+  65   1          adcValue=getAdcValue(Channel3);//获取风速传感器的数值(未转换公式)
+  66   1          //todo 处理传感器的值与阈值判断
+  67   1          //光敏传感器等
+  68   1      //    handleSendSmsInfo();
+  69   1        
+  70   1          dh11Data=DHT11_receive();
+  71   1          sendThresholdToPhone(&dh11Data.RH);   
+  72   1          sendThresholdToPhone(&dh11Data.TH);   
+  73   1          return false;
+  74   1      }
+  75          static const bool handleSendSmsInfo(void)
+  76          {
+  77   1        //todo发送gsm的信息
+  78   1      //  uint8_t adcData=getAdcValueDisplay();
+  79   1      //  sendThresholdToPhone(&adcData);
+  80   1        return true;
+  81   1      }
+  82          void g_delay(const uint32_t one_10us)
+  83          {
+  84   1        if(!one_10us)
+  85   1          return;
+  86   1        g_EndCount=one_10us;
+  87   1        g_CurrentCount=0;
+  88   1        forever{
+  89   2          if(g_CurrentCount>=g_EndCount)
+  90   2            break;
+  91   2        }
+  92   1      }
+  93          static void  interrupt1Init()
+  94          {
+  95   1        EA = OPEN;
+  96   1        TMOD = 0x11;
+  97   1        ET0 = OPEN;
+  98   1        //10 us
+  99   1        TH0=(65536-10)/256;
+ 100   1        TL0=(65536-10)%256;
+ 101   1        TR0=OPEN;
+ 102   1      }
+ 103          static void  uartInit()
+ 104          {
+ 105   1        //设置9600的波特率
+ 106   1      #ifdef RATE12
+ 107   1          RCAP2L=0xD9;
+ 108   1          RCAP2H=0xFF;
+ 109   1          T2CON=0x34;
+ 110   1          SCON=0x50;
+ 111   1          ES=OPEN;
+ 112   1          EA=OPEN;
+ 113   1      #else
                   PCON &= 0x7F;
                   SCON = 0x50;
                   TMOD &= 0x0F; 
+C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 10:10:20 PAGE 3   
+
                   TMOD |= 0x20;
                   TL1 = 0xFD;
                   TH1 = 0xFD;
-C51 COMPILER V9.54   GLOBALMANAGER                                                         04/25/2019 01:44:55 PAGE 3   
-
                   ET1 = 0;
                   TR1 = OPEN; 
                   ES  = OPEN;
               #endif
- 121   1      }
- 122          /*******************************************************************************
- 123          * 函 数 名         : timeout
- 124          * 函数功能       :定时器中断触发
- 125          * 输    入         : 无
- 126          * 输    出         : 无
- 127          *******************************************************************************/
- 128          void timeout(void) interrupt 1
- 129          {
- 130   1        //10 us
- 131   1        TH0=(65536-10)/256;
- 132   1        TL0=(65536-10)%256;
- 133   1      
- 134   1        g_CurrentCount++;
- 135   1        ADC_CLOCK=~ADC_CLOCK;//给adc模块发送方波
- 136   1      }
+ 124   1      }
+ 125          static const bool handleControlMagnet(const bool isOpen)
+ 126          {
+ 127   1        //电磁铁控制开关
+ 128   1        if(isOpen){
+ 129   2            MagnetSwitch=OPEN;//高电平开
+ 130   2        }else{
+ 131   2            MagnetSwitch=CLOSE; //低电平关闭    
+ 132   2        }
+ 133   1        return true;
+ 134   1      }
+ 135          /*******************************************************************************
+ 136          * 函 数 名         : timeout
+ 137          * 函数功能       :定时器中断触发
+ 138          * 输    入         : 无
+ 139          * 输    出         : 无
+ 140          *******************************************************************************/
+ 141          void timeout(void) interrupt 1
+ 142          {
+ 143   1        //10 us
+ 144   1        TH0=(65536-10)/256;
+ 145   1        TL0=(65536-10)%256;
+ 146   1      
+ 147   1        g_CurrentCount++;
+ 148   1        ADC_CLOCK=~ADC_CLOCK;//给adc模块发送方波
+ 149   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    307    ----
+   CODE SIZE        =    306    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     16       6
+   DATA SIZE        =     19       2
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

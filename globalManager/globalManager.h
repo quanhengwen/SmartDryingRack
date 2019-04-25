@@ -31,6 +31,12 @@ typedef struct _GlobalManager{
  * @return true:成功:false:失败
  */
 	const bool (*handleSendSmsInfoFunc)(void);
+	/**
+ * @brief handleControlMagnet:控制电磁铁开关函数
+ * @param isOpen:true:开,false:关
+ * @return true:成功,false:失败
+ */
+const bool (*handleControlMagnetFunc)(const bool isOpen);
 }GlobalManager;
 /*******************************************************************************
 *说明:以下是公有调用部分函数
@@ -56,6 +62,7 @@ _private_	static const bool controlMotor1Status(const MotorStatus status);
 _private_	static const bool controlMotor2Status(const MotorStatus status);
 _private_	static const bool handleSensorData(void);
 _private_	static const bool handleSendSmsInfo(void);
+_private_	static const bool handleControlMagnet(const bool isOpen);
 /*******************************************************************************
 *说明:以下是内部使用的函数
 *******************************************************************************/

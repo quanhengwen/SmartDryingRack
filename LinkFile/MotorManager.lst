@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   MOTORMANAGER                                                          04/25/2019 01:44:55 PAGE 1   
+C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 10:10:20 PAGE 1   
 
 
-C51 COMPILER V9.54, COMPILATION OF MODULE MOTORMANAGER
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MOTORMANAGER
 OBJECT MODULE PLACED IN .\bin\MotorManager.obj
-COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE motorManager\MotorManager.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\Mot
-                    -orManager.lst) TABS(2) OBJECT(.\bin\MotorManager.obj)
+COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE motorManager\MotorManager.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND 
+                    -PRINT(.\LinkFile\MotorManager.lst) TABS(2) OBJECT(.\bin\MotorManager.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52   3            g_delay(speed*100);
   53   3          }
   54   2        }else{
-C51 COMPILER V9.54   MOTORMANAGER                                                          04/25/2019 01:44:55 PAGE 2   
+C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 10:10:20 PAGE 2   
 
   55   2          for(index=7; index>0; --index)
   56   2          {
@@ -92,7 +92,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    268    ----
+   CODE SIZE        =    290    ----
    CONSTANT SIZE    =     16    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

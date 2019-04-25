@@ -1,58 +1,43 @@
-C51 COMPILER V9.54   ADCMANAGER                                                            04/25/2019 01:44:55 PAGE 1   
+C51 COMPILER V9.59.0.0   ADCMANAGER                                                        04/25/2019 10:10:20 PAGE 1   
 
 
-C51 COMPILER V9.54, COMPILATION OF MODULE ADCMANAGER
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE ADCMANAGER
 OBJECT MODULE PLACED IN .\bin\adcManager.obj
-COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE adcManager\adcManager.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\adcMana
-                    -ger.lst) TABS(2) OBJECT(.\bin\adcManager.obj)
+COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE adcManager\adcManager.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRIN
+                    -T(.\LinkFile\adcManager.lst) TABS(2) OBJECT(.\bin\adcManager.obj)
 
 line level    source
 
    1          #include "adcManager.h"
-   2          static uint8_t ADC_DATA;
-   3          static uint8_t real_adc_value[10];
-   4          const uint8_t *getAdcValue(const int8_t channel)
-   5          {
-   6   1          if(channel<0 || channel>7)
-   7   1            return nullptr;
-   8   1          //0口作为模拟输入口
-   9   1          ADC_DATA=0;
-  10   1          ADC_adda= (channel&0x1);
-  11   1          ADC_addb =(channel&0x2);
-  12   1          ADC_addc =(channel&0x4);
-  13   1      
-  14   1          ADC_OE = 0;
-  15   1          ADC_ST = 0;
-  16   1          ADC_ST = 1;
-  17   1          _nop_();//保证足够的上升沿
-  18   1          ADC_ST = 0;
-  19   1          while(!ADC_EOC); //wait conv
-  20   1          ADC_OE = 1;
-  21   1          ADC_DATA = P0;
-  22   1          ADC_OE = 0;
-  23   1          handleAdcValue(channel);
-  24   1          return real_adc_value;
-  25   1      }
-  26          const uint8_t getAdcValueDisplay(void)
-  27          {
-  28   1        return ADC_DATA;
-  29   1      }
-  30          static void handleAdcValue(const int8_t channel)
-  31          {
-  32   1          if(channel<0 || channel>7)
-  33   1            return;
-  34   1          memset(real_adc_value,0,sizeof(uint8_t)*10);
-  35   1          //todo 处理获取到模拟电压和实际对应的公式
-  36   1            
-  37   1      }
+   2          const uint8_t getAdcValue(const int8_t channel)
+   3          {
+   4   1          uint8_t ADC_DATA=0;
+   5   1          if(channel<0 || channel>7)
+   6   1            return nullptr;
+   7   1          //0口作为模拟输入口
+   8   1          ADC_adda= (channel&0x1);
+   9   1          ADC_addb =(channel&0x2);
+  10   1          ADC_addc =(channel&0x4);
+  11   1      
+  12   1          ADC_OE = 0;
+  13   1          ADC_ST = 0;
+  14   1          ADC_ST = 1;
+  15   1          _nop_();//保证足够的上升沿
+  16   1          ADC_ST = 0;
+  17   1          while(!ADC_EOC); //wait conv
+  18   1          ADC_OE = 1;
+  19   1          ADC_DATA = P0;
+  20   1          ADC_OE = 0;
+  21   1          return ADC_DATA;
+  22   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    103    ----
+   CODE SIZE        =     63    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     15    ----
+   DATA SIZE        =      4    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
