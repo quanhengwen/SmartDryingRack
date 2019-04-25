@@ -39,6 +39,16 @@ typedef struct _GlobalManager{
 const bool (*handleControlMagnetFunc)(const bool isOpen);
 }GlobalManager;
 /*******************************************************************************
+*说明:所有传感器的实时数据结构体
+*******************************************************************************/
+typedef struct _SensorValue{
+	uint8_t	PhotosensitiveValue;//光敏实时数据
+	uint8_t	HumidityValue;//湿度值
+	uint8_t	TemperatureValue;//温度值
+	uint8_t	RaindropValue;//雨滴值
+	uint8_t	WindSpeedValue;//风速值	
+}SensorValue;
+/*******************************************************************************
 *说明:以下是公有调用部分函数
 *******************************************************************************/
 /**
@@ -63,6 +73,7 @@ _private_	static const bool controlMotor2Status(const MotorStatus status);
 _private_	static const bool handleSensorData(void);
 _private_	static const bool handleSendSmsInfo(void);
 _private_	static const bool handleControlMagnet(const bool isOpen);
+_private_	static const bool handleSensorDataAnalysis(void);
 /*******************************************************************************
 *说明:以下是内部使用的函数
 *******************************************************************************/

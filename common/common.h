@@ -35,6 +35,12 @@
 #define MOTOR1CIRCLENUMBER 1450
 //电机2转的圈数
 #define MOTOR2CIRCLENUMBER 1450
+//定义一些传感器的阈值（经过实际的测量使用0-100的比例，需要测试）
+#define TemperatureThreshold    50 //温度阈值
+#define HumidityThreshold    50 //湿度阈值
+#define RaindropThreshold    50 //雨滴阈值
+#define PhotosensitiveThreshold    50 //光敏阈值
+#define WindSpeedThreshold			50//风速阈值
 /*******************************************************************************
 *说明:自定义的一些数据类型
 *******************************************************************************/

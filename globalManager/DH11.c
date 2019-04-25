@@ -1,19 +1,19 @@
 #include"DH11.h"
 
 uint8_t rec_dat[9];   //用于显示的接收数据数组
-void DHT11_delay_us(uint8_t n)
+static void DHT11_delay_us(uint8_t n)
 {
     while(--n);
 }
 
-void DHT11_delay_ms(uint32_t z)
+static void DHT11_delay_ms(uint32_t z)
 {
    uint32_t i,j;
    for(i=z;i>0;i--)
       for(j=110;j>0;j--);
 }
 
-void DHT11_start()
+static void DHT11_start()
 {
    Data=1;
    DHT11_delay_us(2);
@@ -23,7 +23,7 @@ void DHT11_start()
    DHT11_delay_us(30);
 }
 
-uint8_t DHT11_rec_byte()      //接收一个字节
+static uint8_t DHT11_rec_byte()      //接收一个字节
 {
    uint8_t i,dat=0;
   for(i=0;i<8;i++)    //从高到低依次接收8位数据

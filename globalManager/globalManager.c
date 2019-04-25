@@ -1,6 +1,7 @@
 #include "globalManager.h"
 //全局管理全局对象
 static  GlobalManager this;
+static  SensorValue		globalSensorValue;
 /**
  * @brief 上电的时候初始化整个单片机所有的参数函数
  */
@@ -57,26 +58,53 @@ static const bool controlMotor2Status(const MotorStatus status)
 }
 const bool handleSensorData(void)
 {
-		uint8_t adcValue=0;
 		DHT11Data dh11Data;
 		memset(&dh11Data,0,sizeof(DHT11Data));
-		adcValue=getAdcValue(Channel1);//获取光敏传感器的数值(未转换公式)
-		adcValue=getAdcValue(Channel2);//获取雨滴传感器的数值(未转换公式)
-		adcValue=getAdcValue(Channel3);//获取风速传感器的数值(未转换公式)
-		//todo 处理传感器的值与阈值判断
-		//光敏传感器等
-//		handleSendSmsInfo();
-	
+		memset(&globalSensorValue,0,sizeof(SensorValue));
+		globalSensorValue.PhotosensitiveValue=getAdcValue(Channel1);//获取光敏传感器的数值(未转换公式)
+		globalSensorValue.RaindropValue=getAdcValue(Channel2);//获取雨滴传感器的数值(未转换公式)
+		globalSensorValue.WindSpeedValue=getAdcValue(Channel3);//获取风速传感器的数值(未转换公式)
 		dh11Data=DHT11_receive();
-		sendThresholdToPhone(&dh11Data.RH);		
-		sendThresholdToPhone(&dh11Data.TH);		
-		return false;
+		globalSensorValue.TemperatureValue=dh11Data.TH;//温度值
+		globalSensorValue.HumidityValue=dh11Data.RH;//湿度值
+		//以下仅用于测试发送到串口看是否正确
+		sendThresholdToPhone(&dh11Data.RH);//湿度值	
+		sendThresholdToPhone(&dh11Data.TH);	//温度值
+		handleSensorDataAnalysis();	
+		return true;
+}
+static const bool handleSensorDataAnalysis(void)
+{
+		bool	isSendSmsInfo=false;
+	isSendSmsInfo=globalSensorValue.PhotosensitiveValue>=PhotosensitiveThreshold?true:false;
+	isSendSmsInfo=globalSensorValue.RaindropValue>=RaindropThreshold?true:false;
+	isSendSmsInfo=globalSensorValue.WindSpeedValue>=WindSpeedThreshold?true:false;
+	isSendSmsInfo=globalSensorValue.TemperatureValue>=TemperatureThreshold?true:false;
+	isSendSmsInfo=globalSensorValue.HumidityValue>=HumidityThreshold?true:false;
+	if(isSendSmsInfo){//发送温湿度短信(温度阈值达到)
+		//控制电机1收衣服
+		this.controlMotor1StatusFunc(Move_Up);
+		//控制电机2收遮雨布
+		this.controlMotor2StatusFunc(Move_Up);	
+		//发送短信给手机
+		handleSendSmsInfo();
+	}else{
+		//todo 去晒衣服	
+	
+	}
+	return true;
 }
 static const bool handleSendSmsInfo(void)
 {
 	//todo发送gsm的信息
-//	uint8_t adcData=getAdcValueDisplay();
-//	sendThresholdToPhone(&adcData);
+	uint8_t xdata sendSmsBuff[50];
+	memset(sendSmsBuff,0,sizeof(uint8_t)*50);
+	sprintf(sendSmsBuff,"Light:%d,Rain:%d,Wind:%d,Temp:%d,Hum:%d",globalSensorValue.PhotosensitiveValue\
+																																,globalSensorValue.RaindropValue\
+																																,globalSensorValue.WindSpeedValue\
+																																,globalSensorValue.TemperatureValue\
+																																,globalSensorValue.HumidityValue);
+	sendThresholdToPhone(sendSmsBuff);
 	return true;
 }
 void g_delay(const uint32_t one_10us)
