@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 11:25:36 PAGE 1   
+C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 14:08:01 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MOTORMANAGER
@@ -62,7 +62,7 @@ line level    source
   52   3            g_delay(speed*100);
   53   3          }
   54   2        }else{
-C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 11:25:36 PAGE 2   
+C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 14:08:01 PAGE 2   
 
   55   2          for(index=7; index>0; --index)
   56   2          {

@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 11:25:36 PAGE 1   
+C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GLOBALMANAGER
@@ -62,7 +62,7 @@ line level    source
   52   2            case Move_Stop:             //停止
   53   2              Motor2ControlStop();
   54   2              return true;
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 11:25:36 PAGE 2   
+C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 2   
 
   55   2            default:
   56   2              return false;
@@ -87,111 +87,151 @@ line level    source
   75   1      }
   76          static const bool handleSensorDataAnalysis(void)
   77          {
-  78   1          bool  isSendSmsInfo=false;
+  78   1        bool  isSendSmsInfo=false;
   79   1        isSendSmsInfo=globalSensorValue.PhotosensitiveValue>=PhotosensitiveThreshold?true:false;
-  80   1        isSendSmsInfo=globalSensorValue.RaindropValue>=RaindropThreshold?true:false;
-  81   1        isSendSmsInfo=globalSensorValue.WindSpeedValue>=WindSpeedThreshold?true:false;
-  82   1        isSendSmsInfo=globalSensorValue.TemperatureValue>=TemperatureThreshold?true:false;
-  83   1        isSendSmsInfo=globalSensorValue.HumidityValue>=HumidityThreshold?true:false;
-  84   1        if(isSendSmsInfo){//发送温湿度短信
-  85   2          handleSendSmsInfo();
-  86   2        }
-  87   1        return true;
-  88   1      }
-  89          static const bool handleSendSmsInfo(void)
-  90          {
-  91   1        //todo发送gsm的信息
-  92   1        uint8_t xdata sendSmsBuff[50];
-  93   1        memset(sendSmsBuff,0,sizeof(uint8_t)*50);
-  94   1        sprintf(sendSmsBuff,"Light:%d,Rain:%d,Wind:%d,Temp:%d,Hum:%d",globalSensorValue.PhotosensitiveValue\
-  95   1                                                                      ,globalSensorValue.RaindropValue\
-  96   1                                                                      ,globalSensorValue.WindSpeedValue\
-  97   1                                                                      ,globalSensorValue.TemperatureValue\
-  98   1                                                                      ,globalSensorValue.HumidityValue);
-  99   1        sendThresholdToPhone(sendSmsBuff);
- 100   1        return true;
- 101   1      }
- 102          void g_delay(const uint32_t one_10us)
- 103          {
- 104   1        if(!one_10us)
- 105   1          return;
- 106   1        g_EndCount=one_10us;
- 107   1        g_CurrentCount=0;
- 108   1        forever{
- 109   2          if(g_CurrentCount>=g_EndCount)
- 110   2            break;
- 111   2        }
- 112   1      }
- 113          static void  interrupt1Init()
- 114          {
- 115   1        EA = OPEN;
- 116   1        TMOD = 0x11;
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 11:25:36 PAGE 3   
+  80   1        if(isSendSmsInfo)
+  81   1            goto DataAnalysis;
+  82   1        isSendSmsInfo=globalSensorValue.RaindropValue>=RaindropThreshold?true:false;
+  83   1        if(isSendSmsInfo)
+  84   1            goto DataAnalysis;  
+  85   1        isSendSmsInfo=globalSensorValue.WindSpeedValue>=WindSpeedThreshold?true:false;
+  86   1        if(isSendSmsInfo)
+  87   1            goto DataAnalysis;  
+  88   1        isSendSmsInfo=globalSensorValue.TemperatureValue>=TemperatureThreshold?true:false;
+  89   1        if(isSendSmsInfo)
+  90   1            goto DataAnalysis;
+  91   1        isSendSmsInfo=globalSensorValue.HumidityValue>=HumidityThreshold?true:false;
+  92   1      DataAnalysis: 
+  93   1        if(isSendSmsInfo){//发送温湿度短信(温度阈值达到)
+  94   2          //此时此刻电机已经收缩状态
+  95   2          if(CLOSE==byte_read(MotorStatusAddress))
+  96   2            return false;
+  97   2          //控制电机1收衣服
+  98   2          this.controlMotor1StatusFunc(Move_Up);
+  99   2          //电磁铁开
+ 100   2          this.handleControlMagnetFunc(true);
+ 101   2          //控制电机2收遮雨布
+ 102   2          this.controlMotor2StatusFunc(Move_Up);  
+ 103   2          //电磁铁关
+ 104   2          this.handleControlMagnetFunc(false);
+ 105   2          //发送短信给手机
+ 106   2          handleSendSmsInfo();
+ 107   2          //保存电机状态
+ 108   2          byte_write(MotorStatusAddress,CLOSE);
+ 109   2        }else{
+ 110   2          //todo 去晒衣服 
+ 111   2        //此时此刻电机已经晒衣服状态
+ 112   2          if(OPEN==byte_read(MotorStatusAddress))
+ 113   2            return false;
+ 114   2          //电磁铁开
+ 115   2          this.handleControlMagnetFunc(true);   
+ 116   2          //控制电机2晒衣服
+C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 3   
 
- 117   1        ET0 = OPEN;
- 118   1        //10 us
- 119   1        TH0=(65536-10)/256;
- 120   1        TL0=(65536-10)%256;
- 121   1        TR0=OPEN;
- 122   1      }
- 123          static void  uartInit()
- 124          {
- 125   1        //设置9600的波特率
- 126   1      #ifdef RATE12
- 127   1          RCAP2L=0xD9;
- 128   1          RCAP2H=0xFF;
- 129   1          T2CON=0x34;
- 130   1          SCON=0x50;
- 131   1          ES=OPEN;
- 132   1          EA=OPEN;
- 133   1      #else
+ 117   2          this.controlMotor2StatusFunc(Move_Down);
+ 118   2          //电磁铁关
+ 119   2          this.handleControlMagnetFunc(false);    
+ 120   2          //控制电机1晒衣服
+ 121   2          this.controlMotor1StatusFunc(Move_Down);
+ 122   2          //发送短信给手机
+ 123   2          handleSendSmsInfo();
+ 124   2          //保存电机状态
+ 125   2          byte_write(MotorStatusAddress,OPEN);
+ 126   2        }
+ 127   1        return true;
+ 128   1      }
+ 129          static const bool handleSendSmsInfo(void)
+ 130          {
+ 131   1        //todo发送gsm的信息
+ 132   1        uint8_t xdata sendSmsBuff[50];
+ 133   1        memset(sendSmsBuff,0,sizeof(uint8_t)*50);
+ 134   1        sprintf(sendSmsBuff,"Light:%d,Rain:%d,Wind:%d,Temp:%d,Hum:%d",globalSensorValue.PhotosensitiveValue\
+ 135   1                                                                      ,globalSensorValue.RaindropValue\
+ 136   1                                                                      ,globalSensorValue.WindSpeedValue\
+ 137   1                                                                      ,globalSensorValue.TemperatureValue\
+ 138   1                                                                      ,globalSensorValue.HumidityValue);
+ 139   1        sendThresholdToPhone(sendSmsBuff);
+ 140   1        return true;
+ 141   1      }
+ 142          void g_delay(const uint32_t one_10us)
+ 143          {
+ 144   1        if(!one_10us)
+ 145   1          return;
+ 146   1        g_EndCount=one_10us;
+ 147   1        g_CurrentCount=0;
+ 148   1        forever{
+ 149   2          if(g_CurrentCount>=g_EndCount)
+ 150   2            break;
+ 151   2        }
+ 152   1      }
+ 153          static void  interrupt1Init()
+ 154          {
+ 155   1        EA = OPEN;
+ 156   1        TMOD = 0x11;
+ 157   1        ET0 = OPEN;
+ 158   1        //10 us
+ 159   1        TH0=(65536-10)/256;
+ 160   1        TL0=(65536-10)%256;
+ 161   1        TR0=OPEN;
+ 162   1      }
+ 163          static void  uartInit()
+ 164          {
+ 165   1        //设置9600的波特率
+ 166   1      #ifdef RATE12
+ 167   1          RCAP2L=0xD9;
+ 168   1          RCAP2H=0xFF;
+ 169   1          T2CON=0x34;
+ 170   1          SCON=0x50;
+ 171   1          ES=OPEN;
+ 172   1          EA=OPEN;
+ 173   1      #else
                   PCON &= 0x7F;
                   SCON = 0x50;
                   TMOD &= 0x0F; 
                   TMOD |= 0x20;
                   TL1 = 0xFD;
+C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 4   
+
                   TH1 = 0xFD;
                   ET1 = 0;
                   TR1 = OPEN; 
                   ES  = OPEN;
               #endif
- 144   1      }
- 145          static const bool handleControlMagnet(const bool isOpen)
- 146          {
- 147   1        //电磁铁控制开关
- 148   1        if(isOpen){
- 149   2            MagnetSwitch=OPEN;//高电平开
- 150   2        }else{
- 151   2            MagnetSwitch=CLOSE; //低电平关闭    
- 152   2        }
- 153   1        return true;
- 154   1      }
- 155          /*******************************************************************************
- 156          * 函 数 名         : timeout
- 157          * 函数功能       :定时器中断触发
- 158          * 输    入         : 无
- 159          * 输    出         : 无
- 160          *******************************************************************************/
- 161          void timeout(void) interrupt 1
- 162          {
- 163   1        //10 us
- 164   1        TH0=(65536-10)/256;
- 165   1        TL0=(65536-10)%256;
- 166   1      
- 167   1        g_CurrentCount++;
- 168   1        ADC_CLOCK=~ADC_CLOCK;//给adc模块发送方波
- 169   1      }
+ 184   1      }
+ 185          static const bool handleControlMagnet(const bool isOpen)
+ 186          {
+ 187   1        //电磁铁控制开关
+ 188   1        if(isOpen){
+ 189   2            MagnetSwitch=OPEN;//高电平开
+ 190   2        }else{
+ 191   2            MagnetSwitch=CLOSE; //低电平关闭    
+ 192   2        }
+ 193   1        return true;
+ 194   1      }
+ 195          /*******************************************************************************
+ 196          * 函 数 名         : timeout
+ 197          * 函数功能       :定时器中断触发
+ 198          * 输    入         : 无
+ 199          * 输    出         : 无
+ 200          *******************************************************************************/
+ 201          void timeout(void) interrupt 1
+ 202          {
+ 203   1        //10 us
+ 204   1        TH0=(65536-10)/256;
+ 205   1        TL0=(65536-10)%256;
+ 206   1      
+ 207   1        g_CurrentCount++;
+ 208   1        ADC_CLOCK=~ADC_CLOCK;//给adc模块发送方波
+ 209   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    479    ----
+   CODE SIZE        =    642    ----
    CONSTANT SIZE    =     40    ----
    XDATA SIZE       =   ----      50
    PDATA SIZE       =   ----    ----
    DATA SIZE        =     24       2
    IDATA SIZE       =   ----    ----
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 11:25:36 PAGE 4   
-
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 

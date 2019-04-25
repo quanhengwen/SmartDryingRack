@@ -416,6 +416,16 @@
               <FileType>5</FileType>
               <FilePath>.\globalManager\DH11.h</FilePath>
             </File>
+            <File>
+              <FileName>EEPROM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\globalManager\EEPROM.c</FilePath>
+            </File>
+            <File>
+              <FileName>EEPROM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\globalManager\EEPROM.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

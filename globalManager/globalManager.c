@@ -75,22 +75,54 @@ const bool handleSensorData(void)
 }
 static const bool handleSensorDataAnalysis(void)
 {
-		bool	isSendSmsInfo=false;
+	bool	isSendSmsInfo=false;
 	isSendSmsInfo=globalSensorValue.PhotosensitiveValue>=PhotosensitiveThreshold?true:false;
+	if(isSendSmsInfo)
+			goto DataAnalysis;
 	isSendSmsInfo=globalSensorValue.RaindropValue>=RaindropThreshold?true:false;
+	if(isSendSmsInfo)
+			goto DataAnalysis;	
 	isSendSmsInfo=globalSensorValue.WindSpeedValue>=WindSpeedThreshold?true:false;
+	if(isSendSmsInfo)
+			goto DataAnalysis;	
 	isSendSmsInfo=globalSensorValue.TemperatureValue>=TemperatureThreshold?true:false;
+	if(isSendSmsInfo)
+			goto DataAnalysis;
 	isSendSmsInfo=globalSensorValue.HumidityValue>=HumidityThreshold?true:false;
+DataAnalysis:	
 	if(isSendSmsInfo){//发送温湿度短信(温度阈值达到)
+		//此时此刻电机已经收缩状态
+		if(CLOSE==byte_read(MotorStatusAddress))
+			return false;
 		//控制电机1收衣服
 		this.controlMotor1StatusFunc(Move_Up);
+		//电磁铁开
+		this.handleControlMagnetFunc(true);
 		//控制电机2收遮雨布
 		this.controlMotor2StatusFunc(Move_Up);	
+		//电磁铁关
+		this.handleControlMagnetFunc(false);
 		//发送短信给手机
 		handleSendSmsInfo();
+		//保存电机状态
+		byte_write(MotorStatusAddress,CLOSE);
 	}else{
 		//todo 去晒衣服	
-	
+	//此时此刻电机已经晒衣服状态
+		if(OPEN==byte_read(MotorStatusAddress))
+			return false;
+		//电磁铁开
+		this.handleControlMagnetFunc(true);		
+		//控制电机2晒衣服
+		this.controlMotor2StatusFunc(Move_Down);
+		//电磁铁关
+		this.handleControlMagnetFunc(false);		
+		//控制电机1晒衣服
+		this.controlMotor1StatusFunc(Move_Down);
+		//发送短信给手机
+		handleSendSmsInfo();
+		//保存电机状态
+		byte_write(MotorStatusAddress,OPEN);
 	}
 	return true;
 }

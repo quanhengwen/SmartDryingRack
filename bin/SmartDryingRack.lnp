@@ -1,6 +1,7 @@
 ".\bin\main.obj",
 ".\bin\globalManager.obj",
 ".\bin\DH11.obj",
+".\bin\EEPROM.obj",
 ".\bin\adcManager.obj",
 ".\bin\gsmManager.obj",
 ".\bin\MotorManager.obj" 
