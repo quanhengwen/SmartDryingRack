@@ -37,4 +37,10 @@ _private_ static void UART1_SendData(uint8_t dat);
  * @return :true:成功,false:失败
  */
 _private_ static const bool Find(uint8_t *content);
+
+_private_ static void UART1_SendString(char *s);
+
+_private_ static uint8_t UART1_Send_AT_Command_END(uint8_t *b,uint8_t *a,uint8_t wait_time,uint16_t interval_time);
+
+void UART1_Send_Command_END(char *s);
 #endif

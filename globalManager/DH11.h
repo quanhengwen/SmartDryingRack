@@ -2,11 +2,26 @@
 #define __DH11_H__
 
 #include<reg52.h>
-#include "../globalManager/globalManager.h"
-extern uint8_t rec_dat[9];   //用于显示的接收数据数组  
-const DHT11Data DHT11_receive();      //接收40位的数据
-static void DHT11_delay_us(uint8_t n);
-static void DHT11_delay_ms(uint32_t z);  
-static void DHT11_start();
-static uint8_t DHT11_rec_byte();      //接收一个字节
+#include "../globalManager/globalManager.h" 
+/**
+ * @brief 获取温湿度的值
+ * @return 无
+ */
+_public_ extern void DHT11_receive();
+/**
+ * @brief 获取温度值
+ * @return 无
+ */
+_public_ extern uint8_t DHT11_receive_TH();
+/**
+ * @brief 获取湿度值
+ * @return 无
+ */
+_public_ extern uint8_t DHT11_receive_RH();
+/*******************************************************************************
+*说明:以下是私有部分函数
+*******************************************************************************/
+_private_ static void Delay(uint16_t count);
+_private_	static void Delay_10us(void);
+_private_	static void get8BitData(void);
 #endif

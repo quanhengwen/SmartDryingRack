@@ -1,10 +1,10 @@
-C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 14:08:01 PAGE 1   
+C51 COMPILER V9.54   MOTORMANAGER                                                          05/11/2019 18:19:50 PAGE 1   
 
 
-C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MOTORMANAGER
+C51 COMPILER V9.54, COMPILATION OF MODULE MOTORMANAGER
 OBJECT MODULE PLACED IN .\bin\MotorManager.obj
-COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE motorManager\MotorManager.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND 
-                    -PRINT(.\LinkFile\MotorManager.lst) TABS(2) OBJECT(.\bin\MotorManager.obj)
+COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE motorManager\MotorManager.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\Mot
+                    -orManager.lst) TABS(2) OBJECT(.\bin\MotorManager.obj)
 
 line level    source
 
@@ -13,87 +13,100 @@ line level    source
    3          *说明:电机1的8拍
    4          *******************************************************************************/
    5          code  uint8_t  motor1Table[]={0x05,0x01,0x09,0x08,0x0A,0x02,0x06,0x04};
-   6          /*******************************************************************************
-   7          *说明:电机2的8拍
-   8          *******************************************************************************/
-   9          code  uint8_t  motor2Table[]={0x50,0x10,0x90,0x80,0xA0,0x20,0x60,0x40};
-  10          void Motor1ControlTurn(bool const direction,const uint32_t circleNumber)
-  11          {
-  12   1          uint32_t number=circleNumber;
-  13   1          uint32_t index=0;
-  14   1          forever{
-  15   2              if(index>=circleNumber)
-  16   2                break;
-  17   2              ++index;
-  18   2              Motor1MakeATurn(direction,MOTOR2SPEED);
-  19   2          }
-  20   1          Motor1ControlStop();
-  21   1          //todo把记录写入EEPROM
-  22   1      }
-  23          void Motor2ControlTurn(bool const direction,const uint32_t circleNumber)
-  24          {
-  25   1          uint32_t number=circleNumber;
-  26   1          uint32_t index=0;
-  27   1          forever{
-  28   2              if(index>=circleNumber)
-  29   2                break;
-  30   2              ++index;
-  31   2              Motor2MakeATurn(direction,MOTOR2SPEED);
-  32   2          }
-  33   1          Motor2ControlStop();
-  34   1          //todo把记录写入EEPROM
-  35   1      }
-  36          void Motor1ControlStop()
-  37          {
-  38   1        P1=0x00;
+   6          //code  uint8_t  motor1Table[]={0x04,0x06,0x02,0x0A,0x08,0x09,0x01,0x05};
+   7          /*******************************************************************************
+   8          *说明:电机2的8拍
+   9          *******************************************************************************/
+  10          code  uint8_t  motor2Table[]={0x50,0x10,0x90,0x80,0xA0,0x20,0x60,0x40};
+  11          //code  uint8_t  motor2Table[]={0x40,0x60,0x20,0xA0,0x80,0x90,0x10,0x50};
+  12          void Motor1ControlTurn(bool const direction,const uint32_t circleNumber)
+  13          {
+  14   1          uint32_t number=circleNumber;
+  15   1          uint32_t index=0;
+  16   1          forever{
+  17   2              if(index>=circleNumber)
+  18   2                break;
+  19   2              ++index;
+  20   2              Motor1MakeATurn(direction,MOTOR1SPEED);
+  21   2          }
+  22   1          Motor1ControlStop();
+  23   1          //todo把记录写入EEPROM
+  24   1      }
+  25          void Motor2ControlTurn(bool const direction,const uint32_t circleNumber)
+  26          {
+  27   1          uint32_t number=circleNumber;
+  28   1          uint32_t index=0;
+  29   1          UART1_Send_Command_END("707070\r\n"); 
+  30   1          forever{
+  31   2              if(index>=circleNumber)
+  32   2                break;
+  33   2              ++index;
+  34   2              Motor2MakeATurn(direction,MOTOR2SPEED);
+  35   2          }
+  36   1          UART1_Send_Command_END("606060\r\n");     
+  37   1          Motor2ControlStop();
+  38   1          //todo把记录写入EEPROM
   39   1      }
-  40          void Motor2ControlStop()
+  40          void Motor1ControlStop()
   41          {
   42   1        P1=0x00;
   43   1      }
-  44          static void Motor2MakeATurn(bool const direction,const uint32_t speed)
+  44          void Motor2ControlStop()
   45          {
-  46   1        uint8_t index=0;
-  47   1        if(direction)
-  48   1        {
-  49   2          for(index=0; index<8; index++)
-  50   2          {
-  51   3            P1  = motor2Table[index];
-  52   3            g_delay(speed*100);
-  53   3          }
-  54   2        }else{
-C51 COMPILER V9.59.0.0   MOTORMANAGER                                                      04/25/2019 14:08:01 PAGE 2   
+  46   1        P1=0x00;
+  47   1      }
+  48          static void Motor2MakeATurn(bool const direction,const uint32_t speed)
+  49          {
+  50   1        uint8_t index=0;
+  51   1        if(direction)
+  52   1        {
+  53   2          for(index=0; index<8; index++)
+  54   2          {
+C51 COMPILER V9.54   MOTORMANAGER                                                          05/11/2019 18:19:50 PAGE 2   
 
-  55   2          for(index=7; index>0; --index)
-  56   2          {
-  57   3            P1 = motor2Table[index];
-  58   3            g_delay(speed*100);
-  59   3          }
-  60   2        }
-  61   1      }
-  62          static void Motor1MakeATurn(bool const direction,const uint32_t speed)
-  63          {
-  64   1        uint8_t index=0;
-  65   1        if(direction)
-  66   1        {
-  67   2          for(index=0; index<8; index++)
-  68   2          {
-  69   3            P1  = motor1Table[index];
-  70   3            g_delay(speed*100);
-  71   3          }
-  72   2        }else{
-  73   2          for(index=7; index>0; --index)
-  74   2          {
-  75   3            P1 = motor1Table[index];
-  76   3            g_delay(speed*100);
-  77   3          }
-  78   2        }
-  79   1      }
+  55   3            P1  = motor2Table[index];
+  56   3            g_delay(speed);
+  57   3          }
+  58   2        }else{
+  59   2          for(index=7; index>0; --index)
+  60   2          {
+  61   3            P1 = motor2Table[index];
+  62   3            g_delay(speed);
+  63   3          }
+  64   2        }
+  65   1      }
+  66          static void Motor1MakeATurn(bool const direction,const uint32_t speed)
+  67          {
+  68   1        uint8_t index=0;
+  69   1        if(direction)
+  70   1        {
+  71   2          for(index=0; index<8; index++)
+  72   2          {
+  73   3            P1  = motor1Table[index];
+  74   3            g_delay(speed);
+  75   3          }
+  76   2        }else{
+  77   2          for(index=7; index>0; --index)
+  78   2          {
+  79   3            P1 = motor1Table[index];
+  80   3            g_delay(speed);
+  81   3          }
+  82   2        }
+  83   1      }
+  84          static void delay(const uint32_t one_1ms)
+  85          {
+  86   1      
+  87   1        uint8_t i,count=one_1ms;
+  88   1        for(;count>0;count--)
+  89   1        {   
+  90   2          for(i=0;i<27;i++);
+  91   2        }
+  92   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    290    ----
-   CONSTANT SIZE    =     16    ----
+   CODE SIZE        =    274    ----
+   CONSTANT SIZE    =     34    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =      4      20

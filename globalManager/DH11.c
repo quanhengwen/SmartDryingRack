@@ -1,80 +1,107 @@
 #include"DH11.h"
-
-uint8_t rec_dat[9];   //用于显示的接收数据数组
-static void DHT11_delay_us(uint8_t n)
+static uint8_t  U8FLAG;
+static uint8_t  U8temp;
+static uint8_t  U8comdata;
+static uint8_t  RHValue;
+static uint8_t  THValue;
+void DHT11_receive()      //接收40位的数据
 {
-    while(--n);
+			uint8_t  U8T_data_H_temp,U8T_data_L_temp,U8RH_data_H_temp,U8RH_data_L_temp,U8checkdata_temp;
+
+			//读取模块数据周期不易小于 2S 
+			 RHValue=0;
+			 THValue=0;
+	     Delay(20000);
+			//主机拉低18ms 
+			 Data=0;
+			 Delay(180);
+			 Data=1;
+			//总线由上拉电阻拉高 主机延时20us
+			 Delay_10us();
+			 Delay_10us();
+			 Delay_10us();
+			 Delay_10us();
+			//主机设为输入 判断从机响应信号 
+			 Data=1;
+			//判断从机是否有低电平响应信号 如不响应则跳出，响应则向下运行	  
+			 if(!Data)		 //T !	  
+			 {
+				 U8FLAG=2;
+			 //判断从机是否发出 80us 的低电平响应信号是否结束	 
+				 while((!Data)&&U8FLAG++);
+				 U8FLAG=2;
+			 //判断从机是否发出 80us 的高电平，如发出则进入数据接收状态
+				 while((Data)&&U8FLAG++);
+			 //数据接收状态		 
+				 get8BitData();
+				 U8RH_data_H_temp=U8comdata;
+				 get8BitData();
+				 U8RH_data_L_temp=U8comdata;
+				 get8BitData();
+				 U8T_data_H_temp=U8comdata;
+				 get8BitData();
+				 U8T_data_L_temp=U8comdata;
+				 get8BitData();
+				 U8checkdata_temp=U8comdata;
+				 Data=1;
+			 //数据校验 
+			 
+				 U8temp=(U8T_data_H_temp+U8T_data_L_temp+U8RH_data_H_temp+U8RH_data_L_temp);
+				 if(U8temp==U8checkdata_temp)
+				 {
+					 //不要小数位了
+						RHValue=U8RH_data_H_temp;
+						THValue=U8T_data_H_temp;
+				 }
+			 }
 }
-
-static void DHT11_delay_ms(uint32_t z)
+uint8_t DHT11_receive_TH()
 {
-   uint32_t i,j;
-   for(i=z;i>0;i--)
-      for(j=110;j>0;j--);
+		return THValue;
 }
-
-static void DHT11_start()
+uint8_t DHT11_receive_RH()
 {
-   Data=1;
-   DHT11_delay_us(2);
-   Data=0;
-   DHT11_delay_ms(30);   //延时18ms以上
-   Data=1;
-   DHT11_delay_us(30);
+		return RHValue;
 }
-
-static uint8_t DHT11_rec_byte()      //接收一个字节
+static void get8BitData(void)
 {
-   uint8_t i,dat=0;
-  for(i=0;i<8;i++)    //从高到低依次接收8位数据
-   {          
-      while(!Data);   ////等待50us低电平过去
-      DHT11_delay_us(8);     //延时60us，如果还为高则数据为1，否则为0 
-      dat<<=1;           //移位使正确接收8位数据，数据为0时直接移位
-      if(Data==1)    //数据为1时，使dat加1来接收数据1
-         dat+=1;
-      while(Data);  //等待数据线拉低    
-    }  
-    return dat;
+			uint8_t i;
+          
+       for(i=0;i<8;i++)	   
+	    {
+		
+	   	    U8FLAG=2;	
+	   	while((!Data)&&U8FLAG++);
+			Delay_10us();
+		    Delay_10us();
+			Delay_10us();
+	  		U8temp=0;
+	     if(Data)U8temp=1;
+		    U8FLAG=2;
+		 while((Data)&&U8FLAG++);
+	   	//超时则跳出for循环		  
+	   	 if(U8FLAG==1)break;
+	   	//判断数据位是0还是1	 
+		// 如果高电平高过预定0高电平值则数据位为 1  	 
+		   U8comdata<<=1;
+	   	 U8comdata|=U8temp;
+			}
 }
-
-const DHT11Data DHT11_receive()      //接收40位的数据
+static void Delay(uint16_t count)
 {
-		DHT11Data recvData;
-    uint8_t R_H,R_L,T_H,T_L,RH,RL,TH,TL,revise; 
-		memset(&recvData,0,sizeof(DHT11Data));
-    DHT11_start();
-    if(Data==0)
-    {
-        while(Data==0);   //等待拉高     
-        DHT11_delay_us(40);  //拉高后延时80us
-        R_H=DHT11_rec_byte();    //接收湿度高八位  
-        R_L=DHT11_rec_byte();    //接收湿度低八位  
-        T_H=DHT11_rec_byte();    //接收温度高八位  
-        T_L=DHT11_rec_byte();    //接收温度低八位
-        revise=DHT11_rec_byte(); //接收校正位
-
-        DHT11_delay_us(25);    //结束
-
-        if((R_H+R_L+T_H+T_L)==revise)      //校正
-        {
-            RH=R_H;
-            RL=R_L;
-            TH=T_H;
-            TL=T_L;
-        } 
-				recvData.RH=RH;
-				recvData.TH=TH;
-        /*数据处理，方便显示*/
-        rec_dat[0]='0'+(RH/10);
-        rec_dat[1]='0'+(RH%10);
-        rec_dat[2]='R';
-        rec_dat[3]='H';
-        rec_dat[4]=' ';
-        rec_dat[5]=' ';
-        rec_dat[6]='0'+(TH/10);
-        rec_dat[7]='0'+(TH%10);
-        rec_dat[8]='C';
-    }
-		return recvData;
+  uint8_t i;
+	for(;count>0;count--)
+	{ 	
+		for(i=0;i<27;i++);
+	}
+}
+static void Delay_10us(void)
+{
+   uint8_t i;
+   i--;
+   i--;
+   i--;
+   i--;
+   i--;
+   i--;
 }

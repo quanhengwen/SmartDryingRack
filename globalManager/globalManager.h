@@ -63,9 +63,9 @@ _public_ extern const GlobalManager g_getGlobalManagerObj();
 _public_ extern	void	g_initSystemParameter(); 
 /**
 * @brief :延时函数
-* @param one_10us:1个10_us,主要保证ADC模块脉冲
+* @param one_1ms:1个1ms
  */
-_public_ extern void g_delay(const uint32_t one_10us);
+_public_ extern void g_delay(const uint32_t one_1ms);
 /*******************************************************************************
 *说明:以下是私有部分函数
 *******************************************************************************/
@@ -74,7 +74,7 @@ _private_	static const bool controlMotor2Status(const MotorStatus status);
 _private_	static const bool handleSensorData(void);
 _private_	static const bool handleSendSmsInfo(void);
 _private_	static const bool handleControlMagnet(const bool isOpen);
-_private_	static const bool handleSensorDataAnalysis(void);
+const int handleSensorDataAnalysis(void);
 /*******************************************************************************
 *说明:以下是内部使用的函数
 *******************************************************************************/
@@ -85,4 +85,7 @@ _private_ static void  uartInit();
 *******************************************************************************/
 _private_ static int32_t g_EndCount=0;
 _private_ static int32_t g_CurrentCount=0;
+
+
+void Motor3MakeATurn(bool const direction,const uint32_t speed);
 #endif

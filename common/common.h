@@ -8,8 +8,9 @@
 /*******************************************************************************
 *说明:自定义一些宏定义
 *******************************************************************************/
-#define RATE12   //使用晶振为12HZ
-//#define RATE110592   //使用晶振为110592HZ
+//#define RATE12   //使用晶振为12HZ
+#define RATE110592   //使用晶振为110592HZ
+//#define UseTest			//使用测试
 //通道0最好不要用，因为它有一个电阻，然后出问题
 #define Channel1		1 //光敏传感器
 #define Channel2		2 //雨滴传感器
@@ -20,7 +21,7 @@
 #define GSM_Module 2 //gsm模块开启
 #define LCD_Module 3 //adc模块开启
 #define MOTOR_Module 4 //电机模块开启
-#define CURRENT_Module ALL_Module //默认测试
+#define CURRENT_Module ALL_Module//默认测试
 #define forever	while(1)
 #define nullptr	((void*)0) //空指针
 #define _public_	//公有
@@ -29,18 +30,18 @@
 #define true	(!0)
 #define false	(!true)
 	
-#define MOTOR1SPEED	7 //电机1的速度控制,值越小速度越快(已经重新购买成功测试成功)
-#define MOTOR2SPEED	1 //电机2的速度控制,值越小速度越快
+#define MOTOR1SPEED	5 //电机1的速度控制,值越小速度越快(已经重新购买成功测试成功)
+#define MOTOR2SPEED	5 //电机2的速度控制,值越小速度越快
 //电机1转的圈数
-#define MOTOR1CIRCLENUMBER 1450
+#define MOTOR1CIRCLENUMBER 200
 //电机2转的圈数
-#define MOTOR2CIRCLENUMBER 1450
+#define MOTOR2CIRCLENUMBER 700
 //定义一些传感器的阈值（经过实际的测量使用0-100的比例，需要测试）
-#define TemperatureThreshold    50 //温度阈值
-#define HumidityThreshold    50 //湿度阈值
-#define RaindropThreshold    50 //雨滴阈值
-#define PhotosensitiveThreshold    50 //光敏阈值
-#define WindSpeedThreshold			50//风速阈值
+#define PhotosensitiveThreshold    79 //光敏阈值 (换算之后 0xc8*100/255)(0-100) 越小光越亮
+#define RaindropThreshold    25 //雨滴阈值  (换算之后 0x29*100/255)(0-100) 越小雨越大
+#define WindSpeedThreshold			2//风速阈值(换算之后 0x04*100/255)(0-100)  越大风越大
+#define TemperatureThreshold    15 //温度阈值 越搞越大
+#define HumidityThreshold    100 //湿度阈值 越大越大
 //掉电不丢失的功能EEPROM的地址段
 #define	MotorStatusAddress	0x2000	//1:表示此时此刻已经在晒衣服了，0:表示此时此刻已经收完衣服	
 /*******************************************************************************
@@ -91,7 +92,9 @@ sbit ADC_addb = P3^5;//adc的地址B
 sbit ADC_addc = P3^6;//adc的地址C
 
 sbit Data=P2^3;   //DHT11定义数据线
-sbit MagnetSwitch=P2^4;   //电磁铁开关
+sbit MagnetSwitch=P2^2;   //电磁铁开关
+sbit WarnLed=P2^0;				//警告灯
+sbit TestWarnLed=P2^1;				//警告灯
 /*******************************************************************************
 *说明:DHT11数据
 *******************************************************************************/

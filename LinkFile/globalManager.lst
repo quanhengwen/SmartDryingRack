@@ -1,10 +1,10 @@
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 1   
+C51 COMPILER V9.54   GLOBALMANAGER                                                         05/11/2019 18:19:49 PAGE 1   
 
 
-C51 COMPILER V9.59.0.0, COMPILATION OF MODULE GLOBALMANAGER
+C51 COMPILER V9.54, COMPILATION OF MODULE GLOBALMANAGER
 OBJECT MODULE PLACED IN .\bin\globalManager.obj
-COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE globalManager\globalManager.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEN
-                    -D PRINT(.\LinkFile\globalManager.lst) TABS(2) OBJECT(.\bin\globalManager.obj)
+COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE globalManager\globalManager.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\g
+                    -lobalManager.lst) TABS(2) OBJECT(.\bin\globalManager.obj)
 
 line level    source
 
@@ -12,228 +12,316 @@ line level    source
    2          //全局管理全局对象
    3          static  GlobalManager this;
    4          static  SensorValue   globalSensorValue;
-   5          /**
-   6           * @brief 上电的时候初始化整个单片机所有的参数函数
-   7           */
-   8          void g_initSystemParameter()
-   9          {
-  10   1          //定时器中断初始化
-  11   1          interrupt1Init();
-  12   1          //初始化串口
-  13   1          uartInit();
-  14   1          //函数的初始化
-  15   1          this.controlMotor1StatusFunc=controlMotor1Status;
-  16   1          this.controlMotor2StatusFunc=controlMotor2Status;
-  17   1          this.handleSensorDataFunc=handleSensorData; 
-  18   1          this.handleSendSmsInfoFunc=handleSendSmsInfo;
-  19   1          this.handleControlMagnetFunc=handleControlMagnet;
-  20   1      }
-  21          const GlobalManager g_getGlobalManagerObj()
-  22          {
-  23   1        return this;
-  24   1      }
-  25          static const bool controlMotor1Status(const MotorStatus status)
-  26          {
-  27   1          switch(status){
-  28   2            case Move_Up:               //正转
-  29   2              Motor1ControlTurn(true,MOTOR1CIRCLENUMBER);
-  30   2                    //todo把记录写入EEPROM
-  31   2              return true;
-  32   2            case Move_Down:              //反转
-  33   2              Motor1ControlTurn(false,MOTOR1CIRCLENUMBER);
-  34   2                    //todo把记录写入EEPROM
-  35   2              return true;
-  36   2            case Move_Stop:             //停止
-  37   2              Motor1ControlStop();
-  38   2              return true;
-  39   2            default:
-  40   2              return false;
-  41   2          } 
-  42   1      }
-  43          static const bool controlMotor2Status(const MotorStatus status)
-  44          {
-  45   1          switch(status){
-  46   2            case Move_Up:               //正转
-  47   2              Motor2ControlTurn(true,MOTOR2CIRCLENUMBER);
-  48   2              return true;
-  49   2            case Move_Down:              //反转
-  50   2              Motor2ControlTurn(false,MOTOR2CIRCLENUMBER);
-  51   2              return true;
-  52   2            case Move_Stop:             //停止
-  53   2              Motor2ControlStop();
+   5          static  bool          isControlMotor=false;
+   6          static  uint32_t      stopGetWindData=-1;
+   7          static  bool isSendOk=true;//默认开机的时候，装置处于收缩状态，也就是收衣服状态
+   8          code  uint8_t  motor3Table[]={0x05,0x01,0x09,0x08,0x0A,0x02,0x06,0x04};
+   9          /**
+  10           * @brief 上电的时候初始化整个单片机所有的参数函数
+  11           */
+  12          void g_initSystemParameter()
+  13          {
+  14   1          isControlMotor=false;
+  15   1          //定时器中断初始化
+  16   1          interrupt1Init();
+  17   1          //初始化串口
+  18   1          uartInit();
+  19   1          //函数的初始化
+  20   1          this.controlMotor1StatusFunc=controlMotor1Status;
+  21   1          this.controlMotor2StatusFunc=controlMotor2Status;
+  22   1          this.handleSensorDataFunc=handleSensorData; 
+  23   1          this.handleSendSmsInfoFunc=handleSendSmsInfo;
+  24   1          this.handleControlMagnetFunc=handleControlMagnet;
+  25   1      }
+  26          const GlobalManager g_getGlobalManagerObj()
+  27          {
+  28   1        return this;
+  29   1      }
+  30          static const bool controlMotor1Status(const MotorStatus status)
+  31          {
+  32   1          switch(status){
+  33   2            case Move_Up:               //正转
+  34   2              Motor1ControlTurn(false,MOTOR1CIRCLENUMBER);
+  35   2                    //todo把记录写入EEPROM
+  36   2              return true;
+  37   2            case Move_Down:              //反转
+  38   2              Motor1ControlTurn(true,MOTOR1CIRCLENUMBER);
+  39   2                    //todo把记录写入EEPROM
+  40   2              return true;
+  41   2            case Move_Stop:             //停止
+  42   2              Motor1ControlStop();
+  43   2              return true;
+  44   2            default:
+  45   2              return false;
+  46   2          }
+  47   1      }
+  48          static const bool controlMotor2Status(const MotorStatus status)
+  49          {
+  50   1          UART1_Send_Command_END("909090\r\n"); 
+  51   1          switch(status){
+  52   2            case Move_Up:               //正转
+  53   2              Motor2ControlTurn(true,MOTOR2CIRCLENUMBER);
   54   2              return true;
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 2   
+C51 COMPILER V9.54   GLOBALMANAGER                                                         05/11/2019 18:19:49 PAGE 2   
 
-  55   2            default:
-  56   2              return false;
-  57   2          } 
-  58   1      }
-  59          const bool handleSensorData(void)
-  60          {
-  61   1          DHT11Data dh11Data;
-  62   1          memset(&dh11Data,0,sizeof(DHT11Data));
-  63   1          memset(&globalSensorValue,0,sizeof(SensorValue));
-  64   1          globalSensorValue.PhotosensitiveValue=getAdcValue(Channel1);//获取光敏传感器的数值(未转换公式)
-  65   1          globalSensorValue.RaindropValue=getAdcValue(Channel2);//获取雨滴传感器的数值(未转换公式)
-  66   1          globalSensorValue.WindSpeedValue=getAdcValue(Channel3);//获取风速传感器的数值(未转换公式)
-  67   1          dh11Data=DHT11_receive();
-  68   1          globalSensorValue.TemperatureValue=dh11Data.TH;//温度值
-  69   1          globalSensorValue.HumidityValue=dh11Data.RH;//湿度值
-  70   1          //以下仅用于测试发送到串口看是否正确
-  71   1          sendThresholdToPhone(&dh11Data.RH);//湿度值 
-  72   1          sendThresholdToPhone(&dh11Data.TH); //温度值
-  73   1          handleSensorDataAnalysis(); 
-  74   1          return true;
-  75   1      }
-  76          static const bool handleSensorDataAnalysis(void)
-  77          {
-  78   1        bool  isSendSmsInfo=false;
-  79   1        isSendSmsInfo=globalSensorValue.PhotosensitiveValue>=PhotosensitiveThreshold?true:false;
-  80   1        if(isSendSmsInfo)
-  81   1            goto DataAnalysis;
-  82   1        isSendSmsInfo=globalSensorValue.RaindropValue>=RaindropThreshold?true:false;
-  83   1        if(isSendSmsInfo)
-  84   1            goto DataAnalysis;  
-  85   1        isSendSmsInfo=globalSensorValue.WindSpeedValue>=WindSpeedThreshold?true:false;
-  86   1        if(isSendSmsInfo)
-  87   1            goto DataAnalysis;  
-  88   1        isSendSmsInfo=globalSensorValue.TemperatureValue>=TemperatureThreshold?true:false;
-  89   1        if(isSendSmsInfo)
-  90   1            goto DataAnalysis;
-  91   1        isSendSmsInfo=globalSensorValue.HumidityValue>=HumidityThreshold?true:false;
-  92   1      DataAnalysis: 
-  93   1        if(isSendSmsInfo){//发送温湿度短信(温度阈值达到)
-  94   2          //此时此刻电机已经收缩状态
-  95   2          if(CLOSE==byte_read(MotorStatusAddress))
-  96   2            return false;
-  97   2          //控制电机1收衣服
-  98   2          this.controlMotor1StatusFunc(Move_Up);
-  99   2          //电磁铁开
- 100   2          this.handleControlMagnetFunc(true);
- 101   2          //控制电机2收遮雨布
- 102   2          this.controlMotor2StatusFunc(Move_Up);  
- 103   2          //电磁铁关
- 104   2          this.handleControlMagnetFunc(false);
- 105   2          //发送短信给手机
- 106   2          handleSendSmsInfo();
- 107   2          //保存电机状态
- 108   2          byte_write(MotorStatusAddress,CLOSE);
- 109   2        }else{
- 110   2          //todo 去晒衣服 
- 111   2        //此时此刻电机已经晒衣服状态
- 112   2          if(OPEN==byte_read(MotorStatusAddress))
- 113   2            return false;
- 114   2          //电磁铁开
- 115   2          this.handleControlMagnetFunc(true);   
- 116   2          //控制电机2晒衣服
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 3   
+  55   2            case Move_Down:              //反转
+  56   2              Motor2ControlTurn(false,MOTOR2CIRCLENUMBER);
+  57   2              return true;
+  58   2            case Move_Stop:             //停止
+  59   2              Motor2ControlStop();
+  60   2              return true;
+  61   2            default:
+  62   2              return false;
+  63   2          }
+  64   1          UART1_Send_Command_END("8080\r\n"); 
+  65   1      }
+  66          const bool handleSensorData(void)
+  67          { 
+  68   1        uint8_t xdata sendSmsBuff[100];
+  69   1        memset(&globalSensorValue,0,sizeof(SensorValue));
+  70   1        globalSensorValue.PhotosensitiveValue=getAdcValue(Channel1)*100.0/255;//获取光敏传感器的数值
+  71   1        globalSensorValue.RaindropValue=getAdcValue(Channel2)*100.0/255;//获取雨滴传感器的数值
+  72   1        globalSensorValue.WindSpeedValue=getAdcValue(Channel3)*100.0/255;//获取风速传感器的数值
+  73   1        TR0=0;//防止干扰
+  74   1        DHT11_receive();
+  75   1        TR0=1;//防止干扰
+  76   1        globalSensorValue.TemperatureValue=DHT11_receive_TH();//温度值
+  77   1        globalSensorValue.HumidityValue=DHT11_receive_RH();//湿度值
+  78   1        sprintf(sendSmsBuff,"from Smart clothes Message: Light:%x,Rain:%x,Wind:%x,Temperature:%x,Humidity:%x\r\n"
+             -,(int)globalSensorValue.PhotosensitiveValue\
+  79   1                                                                      ,(int)globalSensorValue.RaindropValue\
+  80   1                                                                      ,(int)globalSensorValue.WindSpeedValue\
+  81   1                                                                      ,(int)globalSensorValue.TemperatureValue\
+  82   1                                                                      ,(int)globalSensorValue.HumidityValue);
+  83   1          UART1_Send_Command_END(sendSmsBuff);  //温度值                                                              
+  84   1          //对数据进行处理                                                            
+  85   1          EA=0;//防止干扰
+  86   1          isControlMotor=true;
+  87   1          interrupt1Init();
+  88   1          EA=1;//防止干扰                                                               
+  89   1          handleSensorDataAnalysis();                                                                 
+  90   1          EA=0;//防止干扰
+  91   1          isControlMotor=false;
+  92   1          interrupt1Init();
+  93   1          EA=1;//防止干扰                                                                   
+  94   1          return true;
+  95   1      }
+  96          void Motor3MakeATurn(bool const direction,const uint32_t speed)
+  97          {
+  98   1        uint8_t index=0;
+  99   1        if(direction)
+ 100   1        {
+ 101   2          for(index=0; index<8; index++)
+ 102   2          {
+ 103   3            P1  = motor3Table[index];
+ 104   3            g_delay(speed);
+ 105   3          }
+ 106   2        }else{
+ 107   2          for(index=7; index>0; --index)
+ 108   2          {
+ 109   3            P1 = motor3Table[index];
+ 110   3            g_delay(speed);
+ 111   3          }
+ 112   2        }
+ 113   1      }
+ 114          const int handleSensorDataAnalysis(void)
+ 115          {
+C51 COMPILER V9.54   GLOBALMANAGER                                                         05/11/2019 18:19:49 PAGE 3   
 
- 117   2          this.controlMotor2StatusFunc(Move_Down);
- 118   2          //电磁铁关
- 119   2          this.handleControlMagnetFunc(false);    
- 120   2          //控制电机1晒衣服
- 121   2          this.controlMotor1StatusFunc(Move_Down);
- 122   2          //发送短信给手机
- 123   2          handleSendSmsInfo();
- 124   2          //保存电机状态
- 125   2          byte_write(MotorStatusAddress,OPEN);
- 126   2        }
- 127   1        return true;
- 128   1      }
- 129          static const bool handleSendSmsInfo(void)
- 130          {
- 131   1        //todo发送gsm的信息
- 132   1        uint8_t xdata sendSmsBuff[50];
- 133   1        memset(sendSmsBuff,0,sizeof(uint8_t)*50);
- 134   1        sprintf(sendSmsBuff,"Light:%d,Rain:%d,Wind:%d,Temp:%d,Hum:%d",globalSensorValue.PhotosensitiveValue\
- 135   1                                                                      ,globalSensorValue.RaindropValue\
- 136   1                                                                      ,globalSensorValue.WindSpeedValue\
- 137   1                                                                      ,globalSensorValue.TemperatureValue\
- 138   1                                                                      ,globalSensorValue.HumidityValue);
- 139   1        sendThresholdToPhone(sendSmsBuff);
- 140   1        return true;
- 141   1      }
- 142          void g_delay(const uint32_t one_10us)
- 143          {
- 144   1        if(!one_10us)
- 145   1          return;
- 146   1        g_EndCount=one_10us;
- 147   1        g_CurrentCount=0;
- 148   1        forever{
- 149   2          if(g_CurrentCount>=g_EndCount)
- 150   2            break;
- 151   2        }
- 152   1      }
- 153          static void  interrupt1Init()
- 154          {
- 155   1        EA = OPEN;
- 156   1        TMOD = 0x11;
- 157   1        ET0 = OPEN;
- 158   1        //10 us
- 159   1        TH0=(65536-10)/256;
- 160   1        TL0=(65536-10)%256;
- 161   1        TR0=OPEN;
- 162   1      }
- 163          static void  uartInit()
- 164          {
- 165   1        //设置9600的波特率
- 166   1      #ifdef RATE12
- 167   1          RCAP2L=0xD9;
- 168   1          RCAP2H=0xFF;
- 169   1          T2CON=0x34;
- 170   1          SCON=0x50;
- 171   1          ES=OPEN;
- 172   1          EA=OPEN;
- 173   1      #else
-                  PCON &= 0x7F;
-                  SCON = 0x50;
-                  TMOD &= 0x0F; 
-                  TMOD |= 0x20;
-                  TL1 = 0xFD;
-C51 COMPILER V9.59.0.0   GLOBALMANAGER                                                     04/25/2019 14:08:00 PAGE 4   
+ 116   1        bool  isSendSmsInfo=false;
+ 117   1        isSendSmsInfo=globalSensorValue.PhotosensitiveValue>=PhotosensitiveThreshold?true:false;
+ 118   1        if(isSendSmsInfo)
+ 119   1            goto DataAnalysis;
+ 120   1        isSendSmsInfo=globalSensorValue.RaindropValue<=RaindropThreshold?true:false;
+ 121   1        if(isSendSmsInfo)
+ 122   1            goto DataAnalysis;  
+ 123   1        isSendSmsInfo=globalSensorValue.WindSpeedValue>=WindSpeedThreshold?true:false;
+ 124   1        if(isSendSmsInfo)
+ 125   1            goto DataAnalysis;  
+ 126   1        isSendSmsInfo=globalSensorValue.TemperatureValue<=TemperatureThreshold?true:false;
+ 127   1        if(isSendSmsInfo)
+ 128   1            goto DataAnalysis;
+ 129   1        isSendSmsInfo=globalSensorValue.HumidityValue>=HumidityThreshold?true:false;
+ 130   1      DataAnalysis: 
+ 131   1        if(isSendSmsInfo){
+ 132   2          //此时此刻电机已经收缩状态
+ 133   2      //    if(CLOSE==byte_read(MotorStatusAddress))
+ 134   2      //      return false;
+ 135   2      //    UART1_Send_Command_END("00000000000\r\n");
+ 136   2          if(true==isSendOk)
+ 137   2            return false;
+ 138   2      //    UART1_Send_Command_END("1111111111\r\n");
+ 139   2          //控制电机1收衣服
+ 140   2          this.controlMotor1StatusFunc(Move_Down);
+ 141   2          //电磁铁开
+ 142   2          this.handleControlMagnetFunc(true);
+ 143   2          //控制电机2收遮雨布
+ 144   2          this.controlMotor2StatusFunc(Move_Down);  
+ 145   2          //电磁铁关
+ 146   2          this.handleControlMagnetFunc(false);
+ 147   2          //发送短信给手机
+ 148   2          handleSendSmsInfo();
+ 149   2          //保存电机状态
+ 150   2      //    byte_write(MotorStatusAddress,CLOSE);
+ 151   2          isSendOk=true;
+ 152   2        }else{
+ 153   2          //todo 去晒衣服 
+ 154   2        //此时此刻电机已经晒衣服状态
+ 155   2      //    if(OPEN==byte_read(MotorStatusAddress))
+ 156   2      //      return false;
+ 157   2          //电磁铁开
+ 158   2      //    sendThresholdToPhone(&isSendOk);
+ 159   2      //    UART1_Send_Command_END("2222222222\r\n");   
+ 160   2          if(false==isSendOk)
+ 161   2            return false;
+ 162   2      //    UART1_Send_Command_END("3333333333\r\n");
+ 163   2          //sendThresholdToPhone("3");
+ 164   2          this.handleControlMagnetFunc(true); 
+ 165   2          //控制电机2晒衣服
+ 166   2      //    UART1_Send_Command_END("44444444444\r\n");  
+ 167   2          this.controlMotor2StatusFunc(Move_Up);    
+ 168   2          //电磁铁关
+ 169   2          this.handleControlMagnetFunc(false);    
+ 170   2          //控制电机1晒衣服
+ 171   2      //    UART1_Send_Command_END("555555555\r\n");  
+ 172   2          this.controlMotor1StatusFunc(Move_Up);  
+ 173   2          //发送短信给手机
+ 174   2      //    UART1_Send_Command_END("6666666666666\r\n");    
+ 175   2          handleSendSmsInfo();  
+ 176   2      //    UART1_Send_Command_END("77777777777\r\n");      
+ 177   2          //保存电机状态
+C51 COMPILER V9.54   GLOBALMANAGER                                                         05/11/2019 18:19:49 PAGE 4   
 
-                  TH1 = 0xFD;
-                  ET1 = 0;
-                  TR1 = OPEN; 
-                  ES  = OPEN;
-              #endif
- 184   1      }
- 185          static const bool handleControlMagnet(const bool isOpen)
- 186          {
- 187   1        //电磁铁控制开关
- 188   1        if(isOpen){
- 189   2            MagnetSwitch=OPEN;//高电平开
- 190   2        }else{
- 191   2            MagnetSwitch=CLOSE; //低电平关闭    
- 192   2        }
- 193   1        return true;
- 194   1      }
- 195          /*******************************************************************************
- 196          * 函 数 名         : timeout
- 197          * 函数功能       :定时器中断触发
- 198          * 输    入         : 无
- 199          * 输    出         : 无
- 200          *******************************************************************************/
- 201          void timeout(void) interrupt 1
- 202          {
- 203   1        //10 us
- 204   1        TH0=(65536-10)/256;
- 205   1        TL0=(65536-10)%256;
- 206   1      
- 207   1        g_CurrentCount++;
- 208   1        ADC_CLOCK=~ADC_CLOCK;//给adc模块发送方波
- 209   1      }
+ 178   2      //    byte_write(MotorStatusAddress,OPEN);
+ 179   2          isSendOk=false;
+ 180   2        }
+ 181   1        return true;
+ 182   1      }
+ 183          static const bool handleSendSmsInfo(void)
+ 184          {
+ 185   1        //todo发送gsm的信息
+ 186   1        uint8_t xdata sendSmsBuff[100];
+ 187   1        int16_t failCount=0;//失败次数
+ 188   1        memset(sendSmsBuff,0,sizeof(uint8_t)*100);
+ 189   1        sprintf(sendSmsBuff,"from Smart clothes Message: Light:%x,Rain:%x,Wind:%x,Temperature:%x,Humidity:%x\r\n"
+             -,(int)globalSensorValue.PhotosensitiveValue\
+ 190   1                                                                      ,(int)globalSensorValue.RaindropValue\
+ 191   1                                                                      ,(int)globalSensorValue.WindSpeedValue\
+ 192   1                                                                      ,(int)globalSensorValue.TemperatureValue\
+ 193   1                                                                      ,(int)globalSensorValue.HumidityValue);
+ 194   1        forever{
+ 195   2          //自定义失败次数就不发了
+ 196   2          if(10==failCount)
+ 197   2            break;//todo 发送失败之后的处理
+ 198   2          if(sendThresholdToPhone(sendSmsBuff))
+ 199   2            break;//todo 发送成功之后的处理
+ 200   2          failCount++;
+ 201   2        }
+ 202   1        return true;
+ 203   1      }
+ 204          void g_delay(const uint32_t one_1ms)
+ 205          {
+ 206   1        uint8_t i,count=one_1ms;
+ 207   1        if(!isControlMotor){
+ 208   2          for(;count>0;count--)
+ 209   2          {   
+ 210   3            for(i=0;i<27;i++);
+ 211   3          }
+ 212   2        }else{
+ 213   2            g_EndCount=one_1ms;
+ 214   2            g_CurrentCount=0;
+ 215   2        do{}while(g_CurrentCount<g_EndCount);
+ 216   2        }
+ 217   1      }
+ 218          static void  interrupt1Init()
+ 219          {
+ 220   1        if(!isControlMotor){
+ 221   2          EA = OPEN;
+ 222   2          TMOD |= 0x01;
+ 223   2          ET0 = OPEN;
+ 224   2          //10 us
+ 225   2          TH0=(65536-10)/256;
+ 226   2          TL0=(65536-10)%256;
+ 227   2          TR0=OPEN;
+ 228   2        }else{
+ 229   2          EA = OPEN;
+ 230   2          TMOD |= 0x01;
+ 231   2          ET0 = OPEN;
+ 232   2          //10 us
+ 233   2          TH0=(65536-1000)/256;
+ 234   2          TL0=(65536-1000)%256;
+ 235   2          TR0=OPEN;
+ 236   2        }
+ 237   1      }
+ 238          static void  uartInit()
+C51 COMPILER V9.54   GLOBALMANAGER                                                         05/11/2019 18:19:49 PAGE 5   
+
+ 239          {
+ 240   1        //设置9600的波特率
+ 241   1      #ifdef RATE12
+                  RCAP2L=0xD9;
+                  RCAP2H=0xFF;
+                  T2CON=0x34;
+                  SCON=0x50;
+                  ES=OPEN;
+                  EA=OPEN;
+              #else
+ 249   1        PCON &= 0x7F;   //
+ 250   1        SCON = 0x50;    //
+ 251   1        TMOD &= 0x0F;   //
+ 252   1        TMOD |= 0x20;   //
+ 253   1        TL1 = 0xFD;     //
+ 254   1        TH1 = 0xFD;     //
+ 255   1        ET1 = 0;        //
+ 256   1        TR1 = OPEN;       //
+ 257   1        ES  = OPEN;         //
+ 258   1        
+ 259   1        
+ 260   1      #endif
+ 261   1      }
+ 262          static const bool handleControlMagnet(const bool isOpen)
+ 263          {
+ 264   1        //电磁铁控制开关
+ 265   1        if(isOpen){
+ 266   2            MagnetSwitch=CLOSE;//低电平开
+ 267   2        }else{
+ 268   2            MagnetSwitch=OPEN;  //高电平关闭    
+ 269   2        }
+ 270   1        return true;
+ 271   1      }
+ 272          /*******************************************************************************
+ 273          * 函 数 名         : timeout
+ 274          * 函数功能       :定时器中断触发
+ 275          * 输    入         : 无
+ 276          * 输    出         : 无
+ 277          *******************************************************************************/
+ 278          void timeout(void) interrupt 1
+ 279          {
+ 280   1        if(!isControlMotor){
+ 281   2          //10 us
+ 282   2          TH0=(65536-10)/256;
+ 283   2          TL0=(65536-10)%256;
+ 284   2          ADC_CLOCK=~ADC_CLOCK;//给adc模块发送方波
+ 285   2        }else{
+ 286   2          TH0=(65536-1000)/256;
+ 287   2          TL0=(65536-1000)%256;
+ 288   2          g_CurrentCount++;
+ 289   2        }
+ 290   1      }
+*** WARNING C294 IN LINE 64 OF globalManager\globalManager.c: unreachable code
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    642    ----
-   CONSTANT SIZE    =     40    ----
-   XDATA SIZE       =   ----      50
+   CODE SIZE        =    898    ----
+   CONSTANT SIZE    =    106    ----
+   XDATA SIZE       =   ----     200
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     24       2
+   DATA SIZE        =     28       6
    IDATA SIZE       =   ----    ----
+C51 COMPILER V9.54   GLOBALMANAGER                                                         05/11/2019 18:19:49 PAGE 6   
+
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

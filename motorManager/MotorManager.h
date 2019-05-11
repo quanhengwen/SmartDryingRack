@@ -26,5 +26,5 @@ _public_ extern void Motor2ControlStop();
 *******************************************************************************/ 
 _private_ static void Motor2MakeATurn(bool const direction,const uint32_t speed);
 _private_ static void Motor1MakeATurn(bool const direction,const uint32_t speed);
-
+_private_	static void delay(const uint32_t one_1ms);
 #endif 

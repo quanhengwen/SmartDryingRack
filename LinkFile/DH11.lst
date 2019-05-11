@@ -1,104 +1,133 @@
-C51 COMPILER V9.59.0.0   DH11                                                              04/25/2019 14:08:00 PAGE 1   
+C51 COMPILER V9.54   DH11                                                                  05/11/2019 18:19:50 PAGE 1   
 
 
-C51 COMPILER V9.59.0.0, COMPILATION OF MODULE DH11
+C51 COMPILER V9.54, COMPILATION OF MODULE DH11
 OBJECT MODULE PLACED IN .\bin\DH11.obj
-COMPILER INVOKED BY: G:\Keil_v5\C51\BIN\C51.EXE globalManager\DH11.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.
-                    -\LinkFile\DH11.lst) TABS(2) OBJECT(.\bin\DH11.obj)
+COMPILER INVOKED BY: E:\keil5\C51\BIN\C51.EXE globalManager\DH11.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LinkFile\DH11.lst) 
+                    -TABS(2) OBJECT(.\bin\DH11.obj)
 
 line level    source
 
    1          #include"DH11.h"
-   2          
-   3          uint8_t rec_dat[9];   //用于显示的接收数据数组
-   4          static void DHT11_delay_us(uint8_t n)
-   5          {
-   6   1          while(--n);
-   7   1      }
-   8          
-   9          static void DHT11_delay_ms(uint32_t z)
-  10          {
-  11   1         uint32_t i,j;
-  12   1         for(i=z;i>0;i--)
-  13   1            for(j=110;j>0;j--);
-  14   1      }
-  15          
-  16          static void DHT11_start()
-  17          {
-  18   1         Data=1;
-  19   1         DHT11_delay_us(2);
-  20   1         Data=0;
-  21   1         DHT11_delay_ms(30);   //延时18ms以上
-  22   1         Data=1;
-  23   1         DHT11_delay_us(30);
-  24   1      }
-  25          
-  26          static uint8_t DHT11_rec_byte()      //接收一个字节
-  27          {
-  28   1         uint8_t i,dat=0;
-  29   1        for(i=0;i<8;i++)    //从高到低依次接收8位数据
-  30   1         {          
-  31   2            while(!Data);   ////等待50us低电平过去
-  32   2            DHT11_delay_us(8);     //延时60us，如果还为高则数据为1，否则为0 
-  33   2            dat<<=1;           //移位使正确接收8位数据，数据为0时直接移位
-  34   2            if(Data==1)    //数据为1时，使dat加1来接收数据1
-  35   2               dat+=1;
-  36   2            while(Data);  //等待数据线拉低    
-  37   2          }  
-  38   1          return dat;
-  39   1      }
-  40          
-  41          const DHT11Data DHT11_receive()      //接收40位的数据
-  42          {
-  43   1          DHT11Data recvData;
-  44   1          uint8_t R_H,R_L,T_H,T_L,RH,RL,TH,TL,revise; 
-  45   1          memset(&recvData,0,sizeof(DHT11Data));
-  46   1          DHT11_start();
-  47   1          if(Data==0)
-  48   1          {
-  49   2              while(Data==0);   //等待拉高     
-  50   2              DHT11_delay_us(40);  //拉高后延时80us
-  51   2              R_H=DHT11_rec_byte();    //接收湿度高八位  
-  52   2              R_L=DHT11_rec_byte();    //接收湿度低八位  
-  53   2              T_H=DHT11_rec_byte();    //接收温度高八位  
-  54   2              T_L=DHT11_rec_byte();    //接收温度低八位
-C51 COMPILER V9.59.0.0   DH11                                                              04/25/2019 14:08:00 PAGE 2   
+   2          static uint8_t  U8FLAG;
+   3          static uint8_t  U8temp;
+   4          static uint8_t  U8comdata;
+   5          static uint8_t  RHValue;
+   6          static uint8_t  THValue;
+   7          void DHT11_receive()      //接收40位的数据
+   8          {
+   9   1            uint8_t  U8T_data_H_temp,U8T_data_L_temp,U8RH_data_H_temp,U8RH_data_L_temp,U8checkdata_temp;
+  10   1      
+  11   1            //读取模块数据周期不易小于 2S 
+  12   1             RHValue=0;
+  13   1             THValue=0;
+  14   1             Delay(20000);
+  15   1            //主机拉低18ms 
+  16   1             Data=0;
+  17   1             Delay(180);
+  18   1             Data=1;
+  19   1            //总线由上拉电阻拉高 主机延时20us
+  20   1             Delay_10us();
+  21   1             Delay_10us();
+  22   1             Delay_10us();
+  23   1             Delay_10us();
+  24   1            //主机设为输入 判断从机响应信号 
+  25   1             Data=1;
+  26   1            //判断从机是否有低电平响应信号 如不响应则跳出，响应则向下运行   
+  27   1             if(!Data)     //T !    
+  28   1             {
+  29   2               U8FLAG=2;
+  30   2             //判断从机是否发出 80us 的低电平响应信号是否结束  
+  31   2               while((!Data)&&U8FLAG++);
+  32   2               U8FLAG=2;
+  33   2             //判断从机是否发出 80us 的高电平，如发出则进入数据接收状态
+  34   2               while((Data)&&U8FLAG++);
+  35   2             //数据接收状态    
+  36   2               get8BitData();
+  37   2               U8RH_data_H_temp=U8comdata;
+  38   2               get8BitData();
+  39   2               U8RH_data_L_temp=U8comdata;
+  40   2               get8BitData();
+  41   2               U8T_data_H_temp=U8comdata;
+  42   2               get8BitData();
+  43   2               U8T_data_L_temp=U8comdata;
+  44   2               get8BitData();
+  45   2               U8checkdata_temp=U8comdata;
+  46   2               Data=1;
+  47   2             //数据校验 
+  48   2             
+  49   2               U8temp=(U8T_data_H_temp+U8T_data_L_temp+U8RH_data_H_temp+U8RH_data_L_temp);
+  50   2               if(U8temp==U8checkdata_temp)
+  51   2               {
+  52   3                 //不要小数位了
+  53   3                  RHValue=U8RH_data_H_temp;
+  54   3                  THValue=U8T_data_H_temp;
+C51 COMPILER V9.54   DH11                                                                  05/11/2019 18:19:50 PAGE 2   
 
-  55   2              revise=DHT11_rec_byte(); //接收校正位
-  56   2      
-  57   2              DHT11_delay_us(25);    //结束
-  58   2      
-  59   2              if((R_H+R_L+T_H+T_L)==revise)      //校正
-  60   2              {
-  61   3                  RH=R_H;
-  62   3                  RL=R_L;
-  63   3                  TH=T_H;
-  64   3                  TL=T_L;
-  65   3              } 
-  66   2              recvData.RH=RH;
-  67   2              recvData.TH=TH;
-  68   2              /*数据处理，方便显示*/
-  69   2              rec_dat[0]='0'+(RH/10);
-  70   2              rec_dat[1]='0'+(RH%10);
-  71   2              rec_dat[2]='R';
-  72   2              rec_dat[3]='H';
-  73   2              rec_dat[4]=' ';
-  74   2              rec_dat[5]=' ';
-  75   2              rec_dat[6]='0'+(TH/10);
-  76   2              rec_dat[7]='0'+(TH%10);
-  77   2              rec_dat[8]='C';
-  78   2          }
-  79   1          return recvData;
-  80   1      }
+  55   3               }
+  56   2             }
+  57   1      }
+  58          uint8_t DHT11_receive_TH()
+  59          {
+  60   1          return THValue;
+  61   1      }
+  62          uint8_t DHT11_receive_RH()
+  63          {
+  64   1          return RHValue;
+  65   1      }
+  66          static void get8BitData(void)
+  67          {
+  68   1            uint8_t i;
+  69   1                
+  70   1             for(i=0;i<8;i++)    
+  71   1            {
+  72   2          
+  73   2                U8FLAG=2; 
+  74   2            while((!Data)&&U8FLAG++);
+  75   2            Delay_10us();
+  76   2              Delay_10us();
+  77   2            Delay_10us();
+  78   2              U8temp=0;
+  79   2             if(Data)U8temp=1;
+  80   2              U8FLAG=2;
+  81   2           while((Data)&&U8FLAG++);
+  82   2            //超时则跳出for循环     
+  83   2             if(U8FLAG==1)break;
+  84   2            //判断数据位是0还是1   
+  85   2          // 如果高电平高过预定0高电平值则数据位为 1     
+  86   2             U8comdata<<=1;
+  87   2             U8comdata|=U8temp;
+  88   2            }
+  89   1      }
+  90          static void Delay(uint16_t count)
+  91          {
+  92   1        uint8_t i;
+  93   1        for(;count>0;count--)
+  94   1        {   
+  95   2          for(i=0;i<27;i++);
+  96   2        }
+  97   1      }
+  98          static void Delay_10us(void)
+  99          {
+ 100   1         uint8_t i;
+ 101   1         i--;
+ 102   1         i--;
+ 103   1         i--;
+ 104   1         i--;
+ 105   1         i--;
+ 106   1         i--;
+ 107   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    273    ----
+   CODE SIZE        =    230    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     13       8
+   DATA SIZE        =      9       6
    IDATA SIZE       =   ----    ----
+C51 COMPILER V9.54   DH11                                                                  05/11/2019 18:19:50 PAGE 3   
+
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
